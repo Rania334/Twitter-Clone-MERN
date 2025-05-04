@@ -23,7 +23,7 @@ const UserProfilePage = () => {
       setProfile(prev => ({
         ...prev,
         followers: res.data.followers,
-        following: res.data.following
+        // following: res.data.following
       }));
     } catch (err) {
       console.error('Error following/unfollowing:', err);
