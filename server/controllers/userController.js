@@ -33,6 +33,44 @@ const getUserByUsername = async (req, res) => {
   }
 };
 
+
+const followUnfollowUser = async (req, res) => {
+  const userId = req.user.id;
+  const targetId = req.params.id;
+
+  if (userId === targetId)
+    return res.status(400).json({ message: "Can't follow yourself" });
+
+  try {
+    const user = await User.findById(userId);
+    const target = await User.findById(targetId);
+
+    if (!user || !target)
+      return res.status(404).json({ message: "User not found" });
+
+    const isFollowing = target.followers.includes(userId);
+
+    if (isFollowing) {
+      target.followers.pull(userId);
+      user.following.pull(targetId);
+    } else {
+      target.followers.push(userId);
+      user.following.push(targetId);
+    }
+
+    await target.save();
+    await user.save();
+
+    res.status(200).json({
+      followers: target.followers,
+      following: user.following
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 const updateUser = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
@@ -166,4 +204,4 @@ const refreshToken = (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken };
+module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken,followUnfollowUser };

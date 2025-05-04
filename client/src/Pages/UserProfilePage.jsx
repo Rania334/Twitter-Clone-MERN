@@ -79,7 +79,7 @@ const UserProfilePage = () => {
       {/* Avatar, name, username */}
       <Box sx={{ px: 2 }}>
         <Avatar
-          src={profile.avatar}
+          src={profile.profilePic}
           sx={{
             width: 100,
             height: 100,
