@@ -1,6 +1,5 @@
 const Comment = require("../models/Comment");
 const Tweet = require("../models/Tweet");
-
 const addComment = async (req, res) => {
   try {
     const { tweetId, content } = req.body;
@@ -11,21 +10,24 @@ const addComment = async (req, res) => {
       content,
     });
 
-
-
     await comment.save();
+
+    // Populate the user field (with selected fields only for performance)
+    await comment.populate("user", "username profilePic name");
+
     const tweet = await Tweet.findById(tweetId);
     if (!tweet) {
       return res.status(404).json({ message: "Tweet not found" });
     }
+
     await Tweet.findByIdAndUpdate(tweetId, { $push: { comments: comment._id } });
 
-    res.status(201).json(comment);
+    res.status(201).json(comment); // Now includes populated user
   } catch (error) {
-
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 const replyToComment = async (req, res) => {
   try {
