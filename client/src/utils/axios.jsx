@@ -6,7 +6,7 @@ import { setToken, logout } from '../features/auth/authSlice';
 
 const instance = axios.create({
   // eslint-disable-next-line no-undef
-  baseURL:  'https://your-backend-service.onrender.com/api',
+  baseURL:  'https://mern-backend-o9nj.onrender.com/api',
   withCredentials: true,
 });
 
