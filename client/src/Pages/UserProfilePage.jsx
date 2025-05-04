@@ -51,7 +51,7 @@ const UserProfilePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await axios.get(`/user/profile/${username}`, {
+        const userRes = await axios.get(`/user/getUser/${username}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfile(userRes.data);
@@ -72,7 +72,7 @@ const UserProfilePage = () => {
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 2 }}>
       {/* Banner */}
-      <Box sx={{ width: '100%', height: 180, backgroundImage: `url(${profile.coverImage || '/default-cover.jpg'})`, backgroundSize: 'cover' }} />
+      <Box sx={{ width: '100%', height: 180, backgroundImage: `url(${profile.coverImage || ''})`, backgroundSize: 'cover' }} />
 
       {/* Avatar, name, username */}
       <Box sx={{ px: 2 }}>
