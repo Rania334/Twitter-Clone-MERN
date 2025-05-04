@@ -1,10 +1,12 @@
 // src/utils/axios.js
+/* eslint-env browser */
 import axios from 'axios';
 import {store} from '../app/store'; // adjust path as needed
 import { setToken, logout } from '../features/auth/authSlice';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  // eslint-disable-next-line no-undef
+  baseURL:  process.env.REACT_APP_API_BASE_URL,
   withCredentials: true,
 });
 
