@@ -6,7 +6,7 @@ import {
   BrokenImageOutlined, GifBoxOutlined, SentimentSatisfiedOutlined, FmdGoodOutlined,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { postComment } from '../../features/tweet/tweetSlice';
+import { postComment,fetchComments } from '../../features/tweet/tweetSlice';
 import CommentItem from './CommentItem';
 
 const CommentSection = ({ tweetId }) => {
@@ -18,6 +18,7 @@ const CommentSection = ({ tweetId }) => {
     if (!commentText.trim()) return;
     dispatch(postComment({ tweetId, content: commentText }));
     setCommentText('');
+    dispatch(fetchComments(tweetId));
   };
 
   return (
