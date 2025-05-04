@@ -1,0 +1,15 @@
+/* TweetCard.css */
+.CommentIcon {
+    fill: gray;
+    transition: fill 0.1s ease;
+}
+
+.CommentIcon:hover {
+    fill: #1D9BF0 !important;
+}
+
+.RetweetIcon:hover{
+    fill:#00BA7C !important
+
+}
+
