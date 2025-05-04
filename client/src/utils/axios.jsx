@@ -6,7 +6,7 @@ import { setToken, logout } from '../features/auth/authSlice';
 
 const instance = axios.create({
   // eslint-disable-next-line no-undef
-  baseURL:  process.env.REACT_APP_API_BASE_URL,
+  baseURL:  'https://your-backend-service.onrender.com/api',
   withCredentials: true,
 });
 
@@ -24,7 +24,7 @@ instance.interceptors.response.use(
 
         // Update localStorage and Redux
         localStorage.setItem('token', newAccessToken);
-        store.dispatch(setToken({ token: newAccessToken }));
+        store.dispatch(setToken(newAccessToken)); // ✅ Just the string
 
         // Update header & retry original request
         originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;

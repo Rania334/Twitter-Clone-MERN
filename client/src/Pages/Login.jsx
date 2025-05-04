@@ -21,17 +21,34 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/auth/login',
+        '/auth/login',
         { email, password },
         { withCredentials: true }
       );
-      console.log(res.data); 
+      console.log(res.data);
       const token = res.data.accessToken;
-      const decoded = jwtDecode(token);
-      console.log(decoded.username)
+
+      if (!token || typeof token !== 'string') {
+        throw new Error('Invalid token received from server');
+      }
+
+
+      try {
+        if (!token || typeof token !== 'string') {
+          throw new Error('Invalid token');
+        }
+
+        const decoded = jwtDecode(token);
+        console.log(decoded.username);
+      } catch (err) {
+        console.error('Failed to decode JWT:', err.message);
+        alert('Invalid token received. Please try logging in again.');
+        return;
+      }
+
 
       const user = res.data.user.id;
-      console.log(res.data)
+      // console.log(res.data)
 
 
       // ✅ Save token to Redux and localStorage
