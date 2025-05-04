@@ -3,12 +3,12 @@ import axios from '../utils/axios';
 import { useSelector } from 'react-redux';
 import TweetCard from '../Components/HomePage/TweetCard'; // Component for rendering each tweet
 import { Box } from '@mui/material';
-// import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 const UserProfilePage = () => {
 
-  // const { username } = useParams();
+  const { username } = useParams();
 
     const [tweets, setTweets] = useState([]);
     const { token } = useSelector(state => state.auth);
@@ -35,7 +35,7 @@ const UserProfilePage = () => {
     useEffect(() => {
         const fetchTimeline = async () => {
             try {
-                const res = await axios.get(`/tweet/${decode.username}/timeline`, {
+                const res = await axios.get(`/tweet/${username}/timeline`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setTweets(res.data);
@@ -45,7 +45,7 @@ const UserProfilePage = () => {
         };
 
         fetchTimeline();
-    }, [decode.username, token]);
+    }, [username, token]);
     const handleRetweet = async (tweetId) => {
         try {
           const res = await axios.put(`/tweet/${tweetId}/retweet`, {}, {
