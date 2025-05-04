@@ -71,7 +71,7 @@ const likeComment = async (req, res) => {
 const getCommentsForTweet = async (req, res) => {
   try {
     const { tweetId } = req.params;
-    const comments = await Comment.find({ tweet: tweetId }).populate("user", "username","profilePic").populate("replies");
+    const comments = await Comment.find({ tweet: tweetId }).populate("user", "username profilePic").populate("replies");
     res.json(comments);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

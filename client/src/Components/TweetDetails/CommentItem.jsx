@@ -20,7 +20,7 @@ const CommentItem = ({ comment }) => {
   return (
     <Box sx={{ mb: 3 }}>
       <Box display="flex" alignItems="center" mb={1}>
-        <Avatar src={comment.user?.profilePic} sx={{ width: 32, height: 32, mr: 1 }} />
+        {/* <Avatar src={comment.user?.profilePic} sx={{ width: 32, height: 32, mr: 1 }} /> */}
         <Typography fontWeight="bold">{comment.user?.username || 'User'}</Typography>
       </Box>
 
