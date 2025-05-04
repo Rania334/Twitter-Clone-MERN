@@ -60,6 +60,8 @@ const UserProfilePage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTweets(tweetRes.data);
+        console.log(userRes.data,tweetRes.data);
+        
       } catch (err) {
         console.error('Error fetching data:', err);
       }
@@ -72,7 +74,7 @@ const UserProfilePage = () => {
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 2 }}>
       {/* Banner */}
-      <Box sx={{ width: '100%', height: 180, backgroundImage: `url(${profile.coverImage || ''})`, backgroundSize: 'cover' }} />
+      <Box sx={{ width: '100%', height: 180, backgroundImage: `url(${profile.wallpaper || ''})`, backgroundSize: 'cover' }} />
 
       {/* Avatar, name, username */}
       <Box sx={{ px: 2 }}>
