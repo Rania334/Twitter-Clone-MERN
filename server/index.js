@@ -1,11 +1,11 @@
-const express = require("express");
+import express from "express";
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
 
-const authRoutes = require("./routes/authRoutes");
+import authRoutes from "./routes/authRoutes.js";
 const userRoutes = require("./routes/userRoutes");
 const tweetRoutes = require("./routes/tweetRoutes");
 const commentRoutes = require("./routes/commentRoutes");
