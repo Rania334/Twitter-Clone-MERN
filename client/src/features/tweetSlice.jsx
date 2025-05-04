@@ -98,7 +98,7 @@ const tweetSlice = createSlice({
       .addCase(retweetTweet.fulfilled, (state, action) => {
         const updated = action.payload;
         state.tweets = state.tweets.map(t =>
-          t._id === updated._id ? { ...t, likes: updated.retweets } : t
+          t._id === updated._id ? { ...t, retweets: updated.retweets } : t
 
         );
       });
