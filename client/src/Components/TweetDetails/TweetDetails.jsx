@@ -10,6 +10,7 @@ import {
 import TweetHeader from './TweetHeader';
 import TweetActions from './TweetActions';
 import CommentSection from './CommentSection';
+import TweetSkeleton from '../TweetSkeleton'
 
 const TweetDetails = () => {
   const { id } = useParams();
@@ -28,7 +29,11 @@ const TweetDetails = () => {
     dispatch(fetchComments(id));
   }, [dispatch, id, initialTweet]);
 
-  if (loading || !tweet) return <Typography>Loading...</Typography>;
+  if (loading || !tweet)  return (
+    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+      <TweetSkeleton/>
+      
+    </Box>);
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>

@@ -1,5 +1,8 @@
 import React from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
+import MyIcon from '../../assets/MyIcon';
+import Retweet from '../../assets/retweet';
+
 import {
   ChatBubbleOutline,
   Repeat,
@@ -14,13 +17,18 @@ import {
   updateTweetRetweets,
 } from '../../features/tweet/tweetSlice';
 import LikeButton from '../HomePage/LikeButton';
+import './TweetCard.css'
 
 const TweetActions = ({ tweet }) => {
   const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth);
+  // const { token } = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth);
 
-  const liked = tweet.likes.includes(tweet.user._id);
-  const retweeted = tweet.retweets.includes(tweet.user._id);
+  const liked = tweet.likes.includes(user);
+  const retweeted = tweet.retweets.includes(user);
+  console.log(tweet.user._id);
+  console.log(tweet.retweets);
+
 
   const handleLike = async (tweetId) => {
     try {
@@ -46,11 +54,25 @@ const TweetActions = ({ tweet }) => {
 
   return (
     <Box display="flex" justifyContent="space-around" alignItems="center" sx={{ color: 'gray' }}>
-      <IconButton><ChatBubbleOutline fontSize="small" /></IconButton>
-
       <Box display="flex" alignItems="center" gap={0.5}>
-        <IconButton onClick={(e) => { e.stopPropagation(); handleRetweet(tweet._id); }}>
-          {retweeted ? <Repeat fontSize="small" color="primary" /> : <RepeatOutlined fontSize="small" />}
+        <IconButton size="small" onClick={(e) => e.stopPropagation()}>
+          <MyIcon className="CommentIcon" />
+        </IconButton>
+        <Typography variant="caption">{tweet.comments.length}</Typography>
+      </Box>
+      <Box display="flex" alignItems="center" gap={0.5}>
+        <IconButton
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRetweet(tweet._id);
+          }}
+        >
+          {retweeted ? (
+            <Retweet fill="#00BA7C" className="RetweetIcon" />
+          ) : (
+            <Retweet fill="gray" className="RetweetIcon" />
+          )}
         </IconButton>
         <Typography variant="caption">{tweet.retweets.length}</Typography>
       </Box>
@@ -58,7 +80,10 @@ const TweetActions = ({ tweet }) => {
       <Box display="flex" alignItems="center" gap={0.5}>
         <LikeButton
           liked={liked}
-          onClick={(e) => { e.stopPropagation(); handleLike(tweet._id); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLike(tweet._id);
+          }}
         />
         <Typography variant="caption">{tweet.likes.length}</Typography>
       </Box>

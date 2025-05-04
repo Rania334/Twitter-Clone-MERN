@@ -7,7 +7,7 @@ const TweetHeader = ({ tweet }) => {
   return (
     <Box sx={{ p: 2 }}>
       <Box display="flex" alignItems="center" mb={1}>
-        <Avatar src={tweet.user.profilePic || '/default-profile.png'} sx={{ width: 48, height: 48, mr: 2 }} />
+        <Avatar src={tweet.user.profilePic || ''} sx={{ width: 48, height: 48, mr: 2 }} />
         <Box>
           <Typography fontWeight="bold">{tweet.user.name}</Typography>
           <Typography variant="body2" color="text.secondary">@{tweet.user.username}</Typography>
