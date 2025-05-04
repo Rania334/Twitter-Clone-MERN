@@ -15,6 +15,21 @@ const UserProfilePage = () => {
   const [tweets, setTweets] = useState([]);
   const [profile, setProfile] = useState(null);
   const [tab, setTab] = useState(0);
+  const handleFollowToggle = async () => {
+    try {
+      const res = await axios.put(`/user/follow/${profile._id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProfile(prev => ({
+        ...prev,
+        followers: res.data.followers,
+        following: res.data.following
+      }));
+    } catch (err) {
+      console.error('Error following/unfollowing:', err);
+    }
+  };
+
 
   const handleLike = async (tweetId) => {
     try {
@@ -60,8 +75,8 @@ const UserProfilePage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTweets(tweetRes.data);
-        console.log(userRes.data,tweetRes.data);
-        
+        console.log(userRes.data, tweetRes.data);
+
       } catch (err) {
         console.error('Error fetching data:', err);
       }
@@ -92,9 +107,17 @@ const UserProfilePage = () => {
             <Typography variant="h6">{profile.name}</Typography>
             <Typography variant="body2" color="gray">@{profile.username}</Typography>
           </Box>
-          {decode.username === profile.username && (
+          {decode.username === profile.username ? (
             <Button variant="outlined">Edit Profile</Button>
+          ) : (
+            <Button
+              variant={profile.followers?.includes(decode.id) ? 'outlined' : 'contained'}
+              onClick={handleFollowToggle}
+            >
+              {profile.followers?.includes(decode.id) ? 'Following' : 'Follow'}
+            </Button>
           )}
+
         </Box>
         {/* Bio */}
         {profile.bio && <Typography mt={1}>{profile.bio}</Typography>}
