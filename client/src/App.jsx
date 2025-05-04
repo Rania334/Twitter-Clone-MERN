@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setToken } from './features/auth/authSlice';
 
 import Login from './Pages/Login';
@@ -20,7 +20,7 @@ import PublicRoute from './PublicRoute';
 
 function App() {
   const dispatch = useDispatch();
-  const token = useSelector((state) => state.auth.token);
+  // const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
