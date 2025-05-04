@@ -63,7 +63,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                 {/* Header */}
                 <Box display="flex" justifyContent="space-between" alignItems="start">
                     <Box display="flex">
-                        <Avatar src={tweet.user?.profilePic || "/avatar.png"} sx={{ width: 40, height: 40, mr: 1 }} />
+                        <Avatar src={tweet.user?.profilePic || ""} sx={{ width: 40, height: 40, mr: 1 }} />
                        
                         <Box>
                             <Typography variant="body1" fontWeight="bold">

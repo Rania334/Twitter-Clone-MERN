@@ -36,7 +36,7 @@ const TweetInputBox = ({ onTweet }) => {
       borderBottom: '1px solid #e6ecf0',
       bgcolor: 'white',
     }}>
-      <Avatar src="/avatar.png" sx={{ width: 48, height: 48, mr: 2 }} />
+      <Avatar src="" sx={{ width: 48, height: 48, mr: 2 }} />
       <Box sx={{ flexGrow: 1 }}>
         <InputBase
           placeholder="What’s happening?"
