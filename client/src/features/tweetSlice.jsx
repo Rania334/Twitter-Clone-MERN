@@ -1,12 +1,12 @@
 // redux/slices/tweetSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../utils/axios';
+import axios from 'axios';
 
 export const fetchTweets = createAsyncThunk(
   'tweets/fetchTweets',
   async ({ page = 1 }, { getState }) => {
     const token = getState().auth.token;
-    const res = await axios.get(`/tweet?page=${page}&limit=10`, {
+    const res = await axios.get(`https://mern-backend-o9nj.onrender.com/api/tweet?page=${page}&limit=10`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return { data: res.data, page };
