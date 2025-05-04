@@ -19,8 +19,8 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
     const liked = tweet.likes.includes(userId);
     const retweeted = tweet.retweets.includes(userId);
     const [imageLoaded, setImageLoaded] = useState(false);
-    
-    
+
+
 
     const formatTweetDate = (isoDate) => {
         const date = new Date(isoDate);
@@ -29,7 +29,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
         const month = date.toLocaleString('default', { month: 'short' });
         const year = date.getFullYear();
         const showYear = year !== now.getFullYear();
-        
+
         return `${month} ${day}${showYear ? `, ${year}` : ''}`;
     };
 
@@ -63,12 +63,30 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                 {/* Header */}
                 <Box display="flex" justifyContent="space-between" alignItems="start">
                     <Box display="flex">
-                        <Avatar src={tweet.user?.profilePic || ""} sx={{ width: 40, height: 40, mr: 1 }} />
-                       
+                        <Box
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/profile/${tweet.user?.username}`);
+                            }}
+                            sx={{ mr: 1, cursor: 'pointer' }}
+                        >
+                            <Avatar src={tweet.user?.profilePic || ""} sx={{ width: 40, height: 40 }} />
+                        </Box>
+
+
                         <Box>
-                            <Typography variant="body1" fontWeight="bold">
+                            <Typography
+                                variant="body1"
+                                fontWeight="bold"
+                                sx={{ cursor: 'pointer' }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/profile/${tweet.user?.username}`);
+                                }}
+                            >
                                 {tweet.user?.name}
                             </Typography>
+
                             <Typography variant="body2" color="text.secondary">
                                 @{tweet.user?.username} · {formatTweetDate(tweet.createdAt)}
                             </Typography>
@@ -83,7 +101,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                 <Typography variant="body1" sx={{ whiteSpace: 'pre-line', mt: 1 }}>
                     {tweet.content}
                 </Typography>
-                
+
 
 
                 {/* Image with Placeholder */}
@@ -111,7 +129,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                 <Box display="flex" justifyContent="space-between" alignItems="center" mt={2} px={1}>
                     <Box display="flex" alignItems="center" gap={0.5}>
                         <IconButton size="small" onClick={(e) => e.stopPropagation()}>
-                        <MyIcon className="CommentIcon" />
+                            <MyIcon className="CommentIcon" />
                         </IconButton>
                         <Typography variant="caption">{tweet.comments.length}</Typography>
                     </Box>
@@ -156,7 +174,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                 </Box>
             </CardContent>
 
-           
+
         </Card>
     );
 };

@@ -46,8 +46,8 @@ function App() {
                 <Route path="/home" element={<Home />} />
                 <Route path="/upload" element={<UploadForm />} />
                 <Route path="/tweet/:id" element={<TweetDetails />} />
-                <Route path="/userPro" element={<UserProfilePage />} />
-              </Routes>
+                <Route path="/profile/:username" element={<UserProfilePage />} />
+                </Routes>
             </Box>
             <RightSidebar />
           </Box>
