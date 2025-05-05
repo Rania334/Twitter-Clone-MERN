@@ -9,7 +9,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const UserProfilePage = () => {
   const { username } = useParams();
-  const { token } = useSelector(state => state.auth);
+  const { token,user } = useSelector(state => state.auth);
   const decode = jwtDecode(token);
 
   const [tweets, setTweets] = useState([]);
@@ -150,7 +150,7 @@ const UserProfilePage = () => {
             key={tweet._id}
             onLike={handleLike}
             onRetweet={handleRetweet}
-            userId={tweet.user?._id}
+            userId={user}
             tweet={tweet}
           />
         ))}
