@@ -48,7 +48,6 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
             onClick={() => navigate(`/tweet/${tweet._id}`, { state: { tweet } })}
         >
             <CardContent sx={{ pb: 1 }}>
-                {/* NEW: Retweet Label */}
                 {tweet.isRetweet && (
                     <Typography
                         variant="caption"
@@ -56,7 +55,7 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
                         sx={{ ml: 6, mb: 0.5, display: 'flex', alignItems: 'center' }}
                     >
                         <RepeatIcon fontSize="small" sx={{ mr: 0.5 }} />
-                        You Retweeted
+                        Retweeted
                     </Typography>
                 )}
 
