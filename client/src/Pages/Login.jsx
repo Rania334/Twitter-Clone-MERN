@@ -1,99 +1,120 @@
 import React, { useState } from 'react';
-import { Grid, Box, Typography, Button, TextField, Divider } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { setToken, setUser } from '../features/auth/authSlice';
-import { useNavigate } from 'react-router-dom';
-import axios from '../utils/axios';
-import { jwtDecode } from 'jwt-decode';
+import { Box, Button, Typography, Divider, Link } from '@mui/material';
+import XIcon from '@mui/icons-material/X';
+import LoginPopup from './LoginPopup';
 import RegisterPopup from './RegisterPopup';
+import AppleIcon from '@mui/icons-material/Apple';
+import GoogleIcon from '@mui/icons-material/Google';
 
-const Login = () => {
+const LoginPage = () => {
+  const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const styleBtn = {
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('/auth/login', { email, password }, { withCredentials: true });
-      const token = res.data.accessToken;
+    bgcolor: 'background.paper',
+    borderRadius: 20,
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    color: 'rgba(0, 0, 0, 0.78)',
+    my: 1,
+    // width: '70%',
 
-      if (!token || typeof token !== 'string') throw new Error('Invalid token');
-      const decoded = jwtDecode(token);
-      dispatch(setToken(token));
-      dispatch(setUser(res.data.user.id));
-      navigate('/home');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
-    }
-  };
 
+
+    textTransform: 'none',
+    '&:hover': {
+      backgroundColor: '#f5f5f5', // or any hover color you want
+    },
+
+  }
   return (
-    <Grid container sx={{ minHeight: '100vh' }}>
-      {/* Left side logo */}
-      <Grid item xs={12} md={6} sx={{ bgcolor: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography variant="h1" sx={{ fontSize: '180px', fontWeight: 'bold' }}>X</Typography>
-      </Grid>
+    <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      {/* Left: X logo */}
+      <Box
+        sx={{
+          flex: 1,
+          backgroundColor: '#fff',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <XIcon sx={{ fontSize: 350 }} />
+      </Box>
 
-      {/* Right side form */}
-      <Grid item xs={12} md={6} sx={{ p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <Box sx={{ maxWidth: 400, mx: 'auto' }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Happening now</Typography>
-          <Typography variant="h6" sx={{ mt: 2 }}>Join today.</Typography>
+      {/* Right content */}
 
-          <Button variant="outlined" fullWidth sx={{ mt: 3 }} disabled>
-            Sign in as Rania (Google)
-          </Button>
-          <Button variant="outlined" fullWidth sx={{ mt: 1 }} disabled>
-            Sign up with Apple
-          </Button>
-
-          <Divider sx={{ my: 3 }}>OR</Divider>
-
-          <form onSubmit={handleSubmit}>
-            <TextField
-              label="Email"
-              fullWidth
-              margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              fullWidth
-              margin="normal"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
-              Login
-            </Button>
-          </form>
-
-          <Button
-            onClick={() => setOpenRegister(true)}
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, bgcolor: '#1DA1F2' }}
-          >
-            Create account
-          </Button>
-
-          <Typography sx={{ mt: 2, textAlign: 'center' }}>
-            Already have an account?
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Box sx={{ maxWidth: 500, width: '100%', p: 4 }}>
+          <Typography variant="h2" fontWeight="bold" gutterBottom>
+            Happening now
           </Typography>
-          <Button variant="outlined" fullWidth sx={{ mt: 1 }}>
-            Sign in
-          </Button>
-        </Box>
-      </Grid>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            Join today.
+          </Typography>
+          <Box sx={{ width: '70%' }}>
+            <Button variant="outlined" fullWidth sx={styleBtn}>
+              <GoogleIcon sx={{ pr: 1 }} />
+              Sign in with Google
+            </Button>
+            <Button variant="outlined" fullWidth sx={styleBtn}>
+              <AppleIcon sx={{ pr: 1 }} />
+              Sign in with Apple
+            </Button>
 
+            <Divider>or</Divider>
+
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ mt: 3,borderRadius:5, textTransform: 'none', backgroundColor: '#1d9bf0' }}
+              onClick={() => setOpenRegister(true)}
+            >
+              Create account
+            </Button>
+            <Typography  sx={{ mt: 2 ,fontSize:'.8rem' ,color:'gray'}}>
+              By signing up, you agree to the{' '}
+              <Link href="#" underline="hover" sx={{ color: '#1d9bf0' }}>
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="#" underline="hover" sx={{ color: '#1d9bf0' }}>
+                Privacy Policy
+              </Link>
+              , including{' '}
+              <Link href="#" underline="hover" sx={{ color: '#1d9bf0' }}>
+                Cookie Use
+              </Link>
+              .
+            </Typography>
+
+            <Typography variant="subtitle1" sx={{ mt: 4 }}>
+              Already have an account?
+            </Typography>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              sx={{ mt: 1,borderRadius:5, textTransform: 'none' }}
+              onClick={() => setOpenLogin(true)}
+            >
+              Sign in
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Popups */}
+      <LoginPopup open={openLogin} onClose={() => setOpenLogin(false)} />
       <RegisterPopup open={openRegister} onClose={() => setOpenRegister(false)} />
-    </Grid>
+    </Box>
   );
 };
 
-export default Login;
+export default LoginPage;

@@ -162,7 +162,7 @@ const loginUser = async (req, res) => {
     const refreshToken = generateRefreshToken(user);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "Strict",
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
@@ -178,7 +178,7 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "Strict",
   });
   res.json({ message: "Logged out successfully" });
