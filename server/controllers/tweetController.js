@@ -154,11 +154,11 @@ const getUserTimelineTweets = async (req, res) => {
     const userId = user._id;
 
     const originalTweets = await Tweet.find({ user: userId })
-      .populate("user", "name username avatar")
+      .populate("user", "name username profilePic")
       .sort({ createdAt: -1 });
 
     const retweetedTweets = await Tweet.find({ retweets: userId })
-      .populate("user", "name username avatar")
+      .populate("user", "name username profilePic")
       .sort({ createdAt: -1 });
 
     const taggedOriginals = originalTweets.map((tweet) => ({
