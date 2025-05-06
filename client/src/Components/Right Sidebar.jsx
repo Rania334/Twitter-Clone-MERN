@@ -1,154 +1,173 @@
 import {
-    Box,
-    Typography,
-    Card,
-    CardContent,
-    Button,
-    TextField,
-    IconButton,
-    Divider,
-    InputBase,
-    Paper,
-  } from '@mui/material';
-  import SearchIcon from '@mui/icons-material/Search';
-  import MailIcon from '@mui/icons-material/Mail';
-  import { useNavigate } from 'react-router-dom';
-  
-  const RightSidebar = () => {
-    const navigate = useNavigate();
-  
-    const handleMessagesClick = () => {
-      navigate('/messages');
-    };
-  
-    return (
-      <Box
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  InputBase,
+  Divider,
+  Paper,
+  Button,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+
+const trendingTopics = [
+  { category: 'Technology · Trending', title: 'TikTok Ban', posts: '3,824 posts' },
+  { category: 'Trending in Egypt', title: 'Water Crisis' },
+  { category: 'Trending in Egypt', title: '#IndiaPakistanWar', posts: '45.9K posts' },
+  { category: 'Fashion & beauty · Trending', title: '#MetGala', posts: '3.68M posts' },
+  { category: 'Gaming · Trending', title: '#GTA6Leak', posts: '112K posts' },
+];
+
+const liveEvents = [
+  {
+    host: 'قناة الجزيرة',
+    description: 'تغطية مباشرة للاحتلال على غزة',
+    viewers: '+14K',
+  },
+  {
+    host: 'BBC News',
+    description: 'Live coverage of UK election debate',
+    viewers: '+22K',
+  },
+  {
+    host: 'Al Arabiya',
+    description: 'تحديثات عاجلة حول العمليات في السودان',
+    viewers: '+7.5K',
+  },
+  {
+    host: 'CNN',
+    description: 'Live reporting from hurricane zone in Florida',
+    viewers: '+18K',
+  },
+  {
+    host: 'Sky News Arabia',
+    description: 'نقل مباشر من الحدود اللبنانية',
+    viewers: '+5.2K',
+  },
+];
+
+const getRandomItems = (array, count = 1) => {
+  const shuffled = [...array].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
+
+const RightSidebar = () => {
+  const trends = getRandomItems(trendingTopics, 4);
+  const [liveEvent] = getRandomItems(liveEvents, 1);
+
+  return (
+    <Box
+      sx={{
+        width: 350,
+        paddingTop: 2,
+        px: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        position: 'fixed',
+        right: 0,
+      }}
+    >
+      {/* Search Bar */}
+      <Paper
         sx={{
-          width: 300,
-          paddingTop: 2,
-          px: 5,
           display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          position: 'fixed',
-          right:50,
+          alignItems: 'center',
+          borderRadius: '9999px',
+          backgroundColor: '#EFF3F4',
+          px: 2,
+          py: 0.5,
+          height: 40,
         }}
       >
-        {/* Search Bar */}
-        <Paper
-          elevation={0}
+        <SearchIcon fontSize="small" sx={{ color: '#536471' }} />
+        <InputBase
+          placeholder="Search"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            borderRadius: '50px',
-            backgroundColor: '#EFF3F4',
-            px: 2,
-            py: 0.5,
-            height:50,
+            ml: 1,
+            fontSize: 14,
+            flex: 1,
           }}
-        >
-          <SearchIcon fontSize="small" sx={{ color: '#536471' }} />
-          <InputBase
-            placeholder="Search"
-            sx={{
-              ml: 1,
-              fontSize: 14,
-              flex: 1,
-            }}
-          />
-        </Paper>
-  
-        {/* Subscribe to Premium */}
-        <Card
-          sx={{
-            borderRadius: '16px',
-            backgroundColor: '#FFFFFF',
-            // height:200,
-            
+        />
+      </Paper>
 
-          }}
-        >
-          <CardContent sx={{ py: 1.5 }}>
-            <Typography variant="h5" fontWeight="bold">
-              Subscribe to Premium
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>
-              Subscribe to unlock new features and if eligible, receive a share of revenue.
-            </Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              size="small"
-              sx={{ textTransform: 'none', borderRadius: '9999px' }}
+      {/* Live on X */}
+      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff',border:'.5px solid rgba(0, 0, 0, 0.08)' }}>
+        <CardContent sx={{ py: 1.5 }}>
+          <Typography fontWeight="bold" sx={{ fontSize: '1rem', mb: 1 }}>
+            Live on X
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <LiveTvIcon fontSize="small" sx={{ color: '#F91880' }} />
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {liveEvent.host} is hosting
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {liveEvent.description}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+                fontSize: 12,
+                fontWeight: 'bold',
+                backgroundColor: '#F0F0F0',
+                px: 1,
+                borderRadius: '6px',
+                alignSelf: 'start',
+              }}
             >
-              Subscribe
-            </Button>
-          </CardContent>
-        </Card>
-  
-        {/* What's happening */}
-        <Card
-          sx={{
-            borderRadius: '16px',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <CardContent sx={{ py: 1.5 }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-              What’s happening
-            </Typography>
-  
-            {/* Trending items */}
-            <Box sx={{ mb: 1 }}>
-              <Typography variant="body2" fontWeight="medium">
-                #٥٠_سنة_يشتعل_علشانك_في_صمت
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                2,022 posts
-              </Typography>
+              {liveEvent.viewers}
             </Box>
-            <Divider />
-            <Box sx={{ my: 1 }}>
-              <Typography variant="body2" fontWeight="medium">
-                ناصر منسي
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* What’s happening */}
+      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff' ,borderColor:'rgba(0, 0, 0, 0.23)',border:'.5px solid rgba(0, 0, 0, 0.08)'}}>
+        <CardContent sx={{ py: 1.5 }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+            What’s happening
+          </Typography>
+
+          {trends.map((trend, index) => (
+            <Box key={index} sx={{ mb: 3 }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block' }}
+              >
+                {trend.category}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Trending in Egypt
+              <Typography variant="body2" fontWeight={600}>
+                {trend.title}
               </Typography>
+              {trend.posts && (
+                <Typography variant="caption" color="text.secondary">
+                  {trend.posts}
+                </Typography>
+              )}
             </Box>
-            <Divider />
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" fontWeight="medium">
-                الاجهزه الامنيه
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                4,213 posts
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-  
-        {/* Floating Messages Icon */}
-        <IconButton
-          onClick={handleMessagesClick}
-          sx={{
-            position: 'fixed',
-            bottom: 20,
-            right: 20,
-            backgroundColor: '#1D9BF0',
-            color: 'white',
-            borderRadius: '9999px',
-            boxShadow: 3,
-            '&:hover': {
-              backgroundColor: '#1A8CD8',
-            },
-          }}
-        >
-          <MailIcon />
-        </IconButton>
-      </Box>
-    );
-  };
-  
-  export default RightSidebar;
-  
+          ))}
+
+          <Button
+            sx={{
+              mt: 1,
+              textTransform: 'none',
+              color: '#1D9BF0',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              px: 0,
+            }}
+          >
+            Show more
+          </Button>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+};
+
+export default RightSidebar;

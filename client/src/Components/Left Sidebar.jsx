@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from '../utils/axios'; // your Axios instance
+import React, { useState } from 'react';
 import {
   Box, Avatar, Typography, Button, List, ListItem,
   ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem
@@ -9,37 +8,18 @@ import {
   BookmarkBorder, ListAlt, PersonOutline, MoreHoriz
 } from '@mui/icons-material';
 import XIcon from '@mui/icons-material/X';
-import { jwtDecode } from 'jwt-decode';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const LeftSidebar = () => {
-  const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  // Decode token and get username
-  const token = localStorage.getItem('token');
-  const decoded = token ? jwtDecode(token) : null;
-  const username = decoded?.username;
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get(`/user/getUser/${username}`);
-        setUser(res.data);
-      } catch (err) {
-        console.error('Failed to fetch user:', err);
-      }
-    };
-
-    if (username) {
-      fetchUser();
-    }
-  }, [username]);
+  // ✅ Get user from Redux
+  const user = useSelector((state) => state.auth.user);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

@@ -17,8 +17,9 @@ const Home = () => {
   const observer = useRef();
 
   const { tweets, page, hasMore, loading, initialLoad } = useSelector(state => state.tweets);
-  const { token, user } = useSelector(state => state.auth);
-
+  const { token } = useSelector(state => state.auth);
+  const user1 = useSelector((state) => state.auth.user);
+  const user = user1?._id
   useEffect(() => {
     if (token) {
       dispatch(fetchTweets({ page }));
@@ -55,15 +56,15 @@ const Home = () => {
       {initialLoad
         ? Array.from({ length: 5 }).map((_, idx) => <TweetSkeleton key={idx} />)
         : tweets.map((tweet, index) => (
-            <div ref={index === tweets.length - 1 ? lastTweetRef : null} key={tweet._id}>
-              <TweetCard
-                tweet={tweet}
-                userId={user}
-                onLike={handleLike}
-                onRetweet={handleRetweet}
-              />
-            </div>
-          ))}
+          <div ref={index === tweets.length - 1 ? lastTweetRef : null} key={tweet._id}>
+            <TweetCard
+              tweet={tweet}
+              userId={user}
+              onLike={handleLike}
+              onRetweet={handleRetweet}
+            />
+          </div>
+        ))}
 
       {loading && !initialLoad && (
         <Box display="flex" justifyContent="center" my={2}>

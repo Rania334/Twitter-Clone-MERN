@@ -17,6 +17,7 @@ import AppleIcon from '@mui/icons-material/Apple';
 import GoogleIcon from '@mui/icons-material/Google';
 import XIcon from '@mui/icons-material/X';
 import RegisterPopup from './RegisterPopup';
+import { jwtDecode } from 'jwt-decode';
 
 
 const style = {
@@ -64,10 +65,11 @@ const LoginPopup = ({ open, onClose }) => {
                 { withCredentials: true }
             );
             const token = res.data.accessToken;
-            const user = res.data.user.id;
 
             dispatch(setToken(token));
-            dispatch(setUser(user));
+            const decoded = jwtDecode(token);
+            axios.get(`/user/getUser/${decoded.username}`)
+                .then(res => dispatch(setUser(res.data)));
             navigate('/home');
             onClose();
         } catch (err) {

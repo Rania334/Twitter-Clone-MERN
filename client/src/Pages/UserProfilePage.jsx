@@ -12,7 +12,10 @@ const UserProfilePage = () => {
   const navigate = useNavigate();
 
   const { username } = useParams();
-  const { token, user } = useSelector(state => state.auth);
+  const { token } = useSelector(state => state.auth);
+  const user1 = useSelector((state) => state.auth.user);
+  const user = user1?._id
+
   const decode = jwtDecode(token);
 
   const [tweets, setTweets] = useState([]);
@@ -119,17 +122,17 @@ const UserProfilePage = () => {
 
       <Box sx={{ px: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mt={0} >
-        <Avatar
-          src={profile.profilePic}
-          sx={{
-            width: 100,
-            height: 100,
-            border: '3px solid white',
-            mt: -6
-          }}
-        />
-        {decode.username === profile.username ? (
-            <Button variant="outlined"
+          <Avatar
+            src={profile.profilePic}
+            sx={{
+              width: 100,
+              height: 100,
+              border: '3px solid white',
+              mt: -6
+            }}
+          />
+          {decode.username === profile.username ? (
+            <Button variant="contained"
               sx={{ bgcolor: 'black', borderRadius: 6 }} >Edit Profile</Button>
           ) : (
             <Button
@@ -140,13 +143,13 @@ const UserProfilePage = () => {
               {profile.followers?.includes(decode.id) ? 'Following' : 'Follow'}
             </Button>
           )}
-          </Box>
+        </Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
           <Box>
             <Typography variant="h6">{profile.name}</Typography>
             <Typography variant="body2" color="gray">@{profile.username}</Typography>
           </Box>
-          
+
         </Box>
 
         {profile.bio && <Typography mt={1}>{profile.bio}</Typography>}
@@ -157,8 +160,8 @@ const UserProfilePage = () => {
         </Typography>
 
         <Box mt={1}>
-          <Typography  component="span" fontWeight="bold">{profile.following?.length || 0}</Typography> <Typography  component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Following</Typography> &nbsp;
-          <Typography component="span" fontWeight="bold">{profile.followers?.length || 0}</Typography> Followers
+          <Typography component="span" fontWeight="bold">{profile.following?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Following</Typography> &nbsp;
+          <Typography component="span" fontWeight="bold">{profile.followers?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Followers</Typography>
         </Box>
       </Box>
 

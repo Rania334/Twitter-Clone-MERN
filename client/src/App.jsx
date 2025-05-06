@@ -11,22 +11,36 @@ import UserProfilePage from './Pages/UserProfilePage';
 
 import LeftSidebar from './Components/Left Sidebar';
 import RightSidebar from './Components/Right Sidebar';
-
+import { setUser } from './features/auth/authSlice';
+import axios from './utils/axios'; // your Axios instance
 import { Box } from '@mui/material';
 import './App.css';
 
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const dispatch = useDispatch();
   // const token = useSelector((state) => state.auth.token);
-
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
-    if (storedToken) dispatch(setToken(storedToken));
+    if (storedToken) {
+      dispatch(setToken(storedToken));
+      const decoded = jwtDecode(storedToken);
+      const username = decoded?.username;
+  
+      if (username) {
+        axios.get(`/user/getUser/${username}`)
+          .then(res => {
+            dispatch(setUser(res.data));
+          })
+          .catch(err => {
+            console.error('Failed to fetch user:', err);
+          });
+      }
+    }
   }, [dispatch]);
-
   return (
     <Routes>
       {/* Public Route: Login */}

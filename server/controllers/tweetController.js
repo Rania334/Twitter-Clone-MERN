@@ -181,6 +181,21 @@ const getUserTimelineTweets = async (req, res) => {
   }
 };
 
+const getLikedTweets = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const tweets = await Tweet.find({ likes: userId })
+      .sort({ createdAt: -1 })
+      .populate("user", "name username profilePic");
+
+    res.status(200).json(tweets);
+  } catch (err) {
+    console.error("Error fetching liked tweets:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   createTweet,
   getTweets,
@@ -189,5 +204,6 @@ module.exports = {
   retweetTweet,
   getTweetById,
   getUserTimelineTweets,
+  getLikedTweets,
   upload, // Export this if you're using multer in your routes
 };

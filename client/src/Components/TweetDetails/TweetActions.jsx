@@ -17,9 +17,11 @@ import LikeButton from '../HomePage/LikeButton';
 import './TweetCard.css'
 
 const TweetActions = ({ tweet }) => {
+    const user1 = useSelector((state) => state.auth.user);
+    const user=user1?._id
+  
   const dispatch = useDispatch();
-  // const { token } = useSelector((state) => state.auth);
-  const { token, user } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
 
   const liked = tweet.likes.includes(user);
   const retweeted = tweet.retweets.includes(user);
