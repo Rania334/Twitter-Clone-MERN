@@ -27,17 +27,20 @@ const UserProfilePage = () => {
 
   const handleFollowToggle = async () => {
     try {
-      const res = await axios.put(`/user/follow/${profile._id}`, {}, {
+      await axios.put(`/user/follow/${profile._id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setProfile(prev => ({
-        ...prev,
-        followers: res.data.followers,
-      }));
+  
+      // Refetch full profile data after follow/unfollow
+      const userRes = await axios.get(`/user/getUser/${username}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProfile(userRes.data);
     } catch (err) {
       console.error('Error following/unfollowing:', err);
     }
   };
+  
 
   const handleLike = async (tweetId) => {
     try {
@@ -171,9 +174,11 @@ const UserProfilePage = () => {
               setShowModal(true);
             }}
           >
+
             {profile.following?.length || 0}
+            <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Following</Typography>
+
           </Typography>
-          <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Following</Typography>
           &nbsp;
           <Typography
             component="span"
@@ -185,8 +190,9 @@ const UserProfilePage = () => {
             }}
           >
             {profile.followers?.length || 0}
+            <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Followers</Typography>
+
           </Typography>
-          <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Followers</Typography>
         </Box>
       </Box>
 

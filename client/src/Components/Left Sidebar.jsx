@@ -36,15 +36,16 @@ const LeftSidebar = () => {
   };
 
   const navItems = [
-    { label: 'Home', icon: <Home /> },
-    { label: 'Explore', icon: <Search /> },
-    { label: 'Notifications', icon: <NotificationsNone /> },
-    { label: 'Messages', icon: <MailOutline /> },
-    { label: 'Bookmarks', icon: <BookmarkBorder /> },
-    { label: 'Lists', icon: <ListAlt /> },
-    { label: 'Profile', icon: <PersonOutline /> },
-    { label: 'More', icon: <MoreHoriz /> },
+    { label: 'Home', icon: <Home />, path: '/' },
+    { label: 'Explore', icon: <Search />, path: '/explore' },
+    { label: 'Notifications', icon: <NotificationsNone />, path: '/notifications' },
+    { label: 'Messages', icon: <MailOutline />, path: '/messages' },
+    { label: 'Bookmarks', icon: <BookmarkBorder />, path: '/bookmarks' },
+    { label: 'Lists', icon: <ListAlt />, path: '/lists' },
+    { label: 'Profile', icon: <PersonOutline />, path: `/profile/${user?.username}` },
+    { label: 'More', icon: <MoreHoriz />, path: '#' }, // No route yet
   ];
+
 
   return (
     <Box sx={{ width: 180, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100vh', px: 21, py: 1, position: 'fixed' }}>
@@ -56,13 +57,20 @@ const LeftSidebar = () => {
         <List>
           {navItems.map((item) => (
             <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton sx={{ borderRadius: '50px', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
+              <ListItemButton
+                onClick={() => navigate(item.path)}
+                sx={{ borderRadius: '50px', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}
+              >
                 <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: 18, fontWeight: 500 }} />
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontSize: 18, fontWeight: 500 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
+
 
         <Button
           variant="contained"
