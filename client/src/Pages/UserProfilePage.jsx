@@ -2,19 +2,21 @@ import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import { useSelector } from 'react-redux';
 import TweetCard from '../Components/HomePage/TweetCard';
-import { Box, Avatar, Typography, Button, Tabs, Tab, Grid } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Box, Avatar, Typography, Button, Tabs, Tab } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { useNavigate } from 'react-router-dom';
+import UserListModal from '../Components/UserListModal'; // ✅ unified modal
 
 const UserProfilePage = () => {
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({ title: '', userIds: [] });
 
+  const navigate = useNavigate();
   const { username } = useParams();
   const { token } = useSelector(state => state.auth);
-  const user1 = useSelector((state) => state.auth.user);
-  const user = user1?._id
+  const user1 = useSelector(state => state.auth.user);
+  const user = user1?._id;
 
   const decode = jwtDecode(token);
 
@@ -106,7 +108,6 @@ const UserProfilePage = () => {
 
   if (!profile) return null;
 
-  // Utility to deduplicate by _id
   const deduplicate = (array) => {
     return [...new Map(array.map(item => [item._id, item])).values()];
   };
@@ -121,7 +122,7 @@ const UserProfilePage = () => {
       }} />
 
       <Box sx={{ px: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={0} >
+        <Box display="flex" justifyContent="space-between" alignItems="center" mt={0}>
           <Avatar
             src={profile.profilePic}
             sx={{
@@ -132,8 +133,9 @@ const UserProfilePage = () => {
             }}
           />
           {decode.username === profile.username ? (
-            <Button variant="contained"
-              sx={{ bgcolor: 'black', borderRadius: 6 }} >Edit Profile</Button>
+            <Button variant="contained" sx={{ bgcolor: 'black', borderRadius: 6 }}>
+              Edit Profile
+            </Button>
           ) : (
             <Button
               sx={{ bgcolor: 'black', borderRadius: 6 }}
@@ -144,12 +146,12 @@ const UserProfilePage = () => {
             </Button>
           )}
         </Box>
+
         <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
           <Box>
             <Typography variant="h6">{profile.name}</Typography>
             <Typography variant="body2" color="gray">@{profile.username}</Typography>
           </Box>
-
         </Box>
 
         {profile.bio && <Typography mt={1}>{profile.bio}</Typography>}
@@ -160,8 +162,31 @@ const UserProfilePage = () => {
         </Typography>
 
         <Box mt={1}>
-          <Typography component="span" fontWeight="bold">{profile.following?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Following</Typography> &nbsp;
-          <Typography component="span" fontWeight="bold">{profile.followers?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Followers</Typography>
+          <Typography
+            component="span"
+            fontWeight="bold"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              setModalData({ title: 'Following', userIds: profile.following });
+              setShowModal(true);
+            }}
+          >
+            {profile.following?.length || 0}
+          </Typography>
+          <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Following</Typography>
+          &nbsp;
+          <Typography
+            component="span"
+            fontWeight="bold"
+            sx={{ cursor: 'pointer' }}
+            onClick={() => {
+              setModalData({ title: 'Followers', userIds: profile.followers });
+              setShowModal(true);
+            }}
+          >
+            {profile.followers?.length || 0}
+          </Typography>
+          <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'> Followers</Typography>
         </Box>
       </Box>
 
@@ -233,9 +258,6 @@ const UserProfilePage = () => {
           </Box>
         }
 
-
-
-
         {tab === 3 &&
           deduplicate(likedTweets).map(tweet => (
             <TweetCard
@@ -247,6 +269,13 @@ const UserProfilePage = () => {
             />
           ))}
       </Box>
+
+      <UserListModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        users={modalData.userIds} // ✅ updated prop
+        title={modalData.title}
+      />
     </Box>
   );
 };

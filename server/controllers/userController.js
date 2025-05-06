@@ -25,13 +25,18 @@ const uploadToCloudinary = (fileBuffer) => {
 };
 const getUserByUsername = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username }).select("-password");
+    const user = await User.findOne({ username: req.params.username })
+      .populate("followers", "username name profilePic")
+      .populate("following", "username name profilePic")
+      .select("-password");
+
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (err) {
     res.status(500).json(err);
   }
 };
+
 
 
 const followUnfollowUser = async (req, res) => {
