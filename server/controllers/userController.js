@@ -162,8 +162,8 @@ const loginUser = async (req, res) => {
     const refreshToken = generateRefreshToken(user);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "Strict",
+      secure: true,
+      sameSite: "None",
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 

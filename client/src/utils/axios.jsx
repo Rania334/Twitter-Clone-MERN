@@ -31,7 +31,9 @@ instance.interceptors.response.use(
       console.warn('Access token expired. Attempting to refresh...');
 
       try {
-        const res = await instance.post('/auth/refresh-token');
+        const res = await instance.post('https://mern-backend-o9nj.onrender.com/api/auth/refresh-token');
+        console.log(res,res.data);
+        
         const newAccessToken = res.data.accessToken;
 
         if (newAccessToken) {
