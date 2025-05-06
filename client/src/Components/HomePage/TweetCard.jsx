@@ -15,6 +15,12 @@ import { useNavigate } from 'react-router-dom';
 import LikeButton from './LikeButton';
 
 const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
+    const getViewCount = (tweet) => {
+        const baseCount = tweet.likes.length + tweet.retweets.length + tweet.comments.length;
+        const randomBoost = Math.floor(Math.random() * 100); // Adds up to 99 fake views
+        return (baseCount * 100 + randomBoost).toLocaleString(); // Multiply to simulate more views
+    };
+
     const navigate = useNavigate();
     const liked = tweet.likes.includes(userId);
     const retweeted = tweet.retweets.includes(userId);
@@ -163,8 +169,9 @@ const TweetCard = ({ tweet, userId, onLike, onRetweet }) => {
 
                     <Box display="flex" alignItems="center" gap={0.5}>
                         <BarChart fontSize="small" />
-                        <Typography variant="caption">4.6M</Typography>
+                        <Typography variant="caption">{getViewCount(tweet)}</Typography>
                     </Box>
+
 
 
                     <IconButton size="small" onClick={(e) => e.stopPropagation()}>

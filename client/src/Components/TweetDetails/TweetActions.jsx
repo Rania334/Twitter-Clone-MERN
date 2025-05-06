@@ -4,11 +4,8 @@ import MyIcon from '../../assets/MyIcon';
 import Retweet from '../../assets/retweet';
 
 import {
-  ChatBubbleOutline,
-  Repeat,
-  RepeatOutlined,
+
   IosShare,
-  BarChart,
 } from '@mui/icons-material';
 import axios from '../../utils/axios';
 import { useSelector, useDispatch } from 'react-redux';
@@ -89,7 +86,6 @@ const TweetActions = ({ tweet }) => {
       </Box>
 
       <IconButton><IosShare fontSize="small" /></IconButton>
-      <IconButton><BarChart fontSize="small" /></IconButton>
     </Box>
   );
 };
