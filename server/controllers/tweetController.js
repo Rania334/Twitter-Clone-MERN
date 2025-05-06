@@ -144,29 +144,22 @@ const getTweetById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 const getUserTimelineTweets = async (req, res) => {
   try {
     const username = req.params.username;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const userId = user._id;
 
     const originalTweets = await Tweet.find({ user: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("user", "name username profilePic");
+      .populate("user", "name username profilePic")
+      .sort({ createdAt: -1 });
 
     const retweetedTweets = await Tweet.find({ retweets: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("user", "name username profilePic");
+      .populate("user", "name username profilePic")
+      .sort({ createdAt: -1 });
 
     const taggedOriginals = originalTweets.map((tweet) => ({
       ...tweet.toObject(),
@@ -179,6 +172,7 @@ const getUserTimelineTweets = async (req, res) => {
     }));
 
     const allTweets = [...taggedOriginals, ...taggedRetweets];
+
     allTweets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     res.status(200).json(allTweets);
@@ -187,22 +181,17 @@ const getUserTimelineTweets = async (req, res) => {
   }
 };
 
-
 const getLikedTweets = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    const userId = req.params.userId;
 
     const tweets = await Tweet.find({ likes: userId })
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
       .populate("user", "name username profilePic");
 
     res.status(200).json(tweets);
   } catch (err) {
+    console.error("Error fetching liked tweets:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

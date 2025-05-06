@@ -1,41 +1,27 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import { useSelector } from 'react-redux';
 import TweetCard from '../Components/HomePage/TweetCard';
-import { Box, Avatar, Typography, Button, Tabs, Tab } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Avatar, Typography, Button, Tabs, Tab, Grid } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-
-const TWEETS_LIMIT = 10;
+import { useNavigate } from 'react-router-dom';
 
 const UserProfilePage = () => {
-  const { username } = useParams();
-  const { token } = useSelector(state => state.auth);
-  const user = useSelector(state => state.auth.user)?._id;
-  const decode = jwtDecode(token);
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState(null);
-  const [tab, setTab] = useState(0);
+  const { username } = useParams();
+  const { token } = useSelector(state => state.auth);
+  const user1 = useSelector((state) => state.auth.user);
+  const user = user1?._id
+
+  const decode = jwtDecode(token);
 
   const [tweets, setTweets] = useState([]);
   const [likedTweets, setLikedTweets] = useState([]);
-  const [hasMoreTweets, setHasMoreTweets] = useState(true);
-  const [hasMoreLikes, setHasMoreLikes] = useState(true);
-
-  const observer = useRef();
-
-  const lastTweetRef = useCallback((node) => {
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        if (tab === 0 && hasMoreTweets) loadTweets();
-        else if (tab === 3 && hasMoreLikes) loadLikedTweets();
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [tab, hasMoreTweets, hasMoreLikes]);
+  const [profile, setProfile] = useState(null);
+  const [tab, setTab] = useState(0);
 
   const handleFollowToggle = async () => {
     try {
@@ -47,7 +33,7 @@ const UserProfilePage = () => {
         followers: res.data.followers,
       }));
     } catch (err) {
-      console.error('Follow toggle failed:', err);
+      console.error('Error following/unfollowing:', err);
     }
   };
 
@@ -58,10 +44,12 @@ const UserProfilePage = () => {
       });
       const updatedTweet = res.data.tweet;
       setTweets(prev =>
-        prev.map(tweet => tweet._id === tweetId ? { ...tweet, likes: updatedTweet.likes } : tweet)
+        prev.map(tweet =>
+          tweet._id === tweetId ? { ...tweet, likes: updatedTweet.likes } : tweet
+        )
       );
-    } catch (err) {
-      console.error('Error liking tweet:', err);
+    } catch (error) {
+      console.error('Error liking tweet:', error);
     }
   };
 
@@ -72,96 +60,112 @@ const UserProfilePage = () => {
       });
       const updatedTweet = res.data.tweet;
       setTweets(prev =>
-        prev.map(tweet => tweet._id === tweetId ? { ...tweet, retweets: updatedTweet.retweets } : tweet)
+        prev.map(tweet =>
+          tweet._id === tweetId ? { ...tweet, retweets: updatedTweet.retweets } : tweet
+        )
       );
-    } catch (err) {
-      console.error('Error retweeting tweet:', err);
-    }
-  };
-
-  const loadTweets = async () => {
-    try {
-      const skip = tweets.length;
-      const res = await axios.get(`/tweet/${username}/timeline?skip=${skip}&limit=${TWEETS_LIMIT}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTweets(prev => [...prev, ...res.data]);
-      if (res.data.length < TWEETS_LIMIT) setHasMoreTweets(false);
-    } catch (err) {
-      console.error('Error loading tweets:', err);
-    }
-  };
-
-  const loadLikedTweets = async () => {
-    try {
-      const skip = likedTweets.length;
-      const res = await axios.get(`/tweet/likes/${profile._id}?skip=${skip}&limit=${TWEETS_LIMIT}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setLikedTweets(prev => [...prev, ...res.data]);
-      if (res.data.length < TWEETS_LIMIT) setHasMoreLikes(false);
-    } catch (err) {
-      console.error('Error loading liked tweets:', err);
+    } catch (error) {
+      console.error('Error retweeting:', error);
     }
   };
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
         const userRes = await axios.get(`/user/getUser/${username}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfile(userRes.data);
+
+        const tweetRes = await axios.get(`/tweet/${username}/timeline`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setTweets(tweetRes.data);
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error('Error fetching data:', err);
       }
     };
-
-    fetchUserProfile();
+    fetchData();
   }, [username, token]);
 
   useEffect(() => {
-    setTweets([]);
-    setLikedTweets([]);
-    setHasMoreTweets(true);
-    setHasMoreLikes(true);
-
-    if (tab === 0) loadTweets();
-    if (tab === 3 && profile) loadLikedTweets();
-  }, [tab, profile]);
+    const fetchLikedTweets = async () => {
+      if (tab === 3 && profile) {
+        try {
+          const res = await axios.get(`/tweet/likes/${profile._id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setLikedTweets(res.data);
+        } catch (err) {
+          console.error('Error fetching liked tweets:', err);
+        }
+      }
+    };
+    fetchLikedTweets();
+  }, [tab, profile, token]);
 
   if (!profile) return null;
 
-  const deduplicate = (array) => [...new Map(array.map(item => [item._id, item])).values()];
+  // Utility to deduplicate by _id
+  const deduplicate = (array) => {
+    return [...new Map(array.map(item => [item._id, item])).values()];
+  };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 2 }}>
-      <Box sx={{ height: 180, backgroundImage: `url(${profile.wallpaper || ''})`, backgroundSize: 'cover' }} />
+      <Box sx={{
+        width: '100%',
+        height: 180,
+        backgroundImage: `url(${profile.wallpaper || ''})`,
+        backgroundSize: 'cover'
+      }} />
+
       <Box sx={{ px: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={0}>
-          <Avatar src={profile.profilePic} sx={{ width: 100, height: 100, border: '3px solid white', mt: -6 }} />
+        <Box display="flex" justifyContent="space-between" alignItems="center" mt={0} >
+          <Avatar
+            src={profile.profilePic}
+            sx={{
+              width: 100,
+              height: 100,
+              border: '3px solid white',
+              mt: -6
+            }}
+          />
           {decode.username === profile.username ? (
-            <Button variant="contained" sx={{ bgcolor: 'black', borderRadius: 6 }}>Edit Profile</Button>
+            <Button variant="contained"
+              sx={{ bgcolor: 'black', borderRadius: 6 }} >Edit Profile</Button>
           ) : (
-            <Button variant="contained" onClick={handleFollowToggle} sx={{ bgcolor: 'black', borderRadius: 6 }}>
+            <Button
+              sx={{ bgcolor: 'black', borderRadius: 6 }}
+              variant='contained'
+              onClick={handleFollowToggle}
+            >
               {profile.followers?.includes(decode.id) ? 'Following' : 'Follow'}
             </Button>
           )}
         </Box>
-        <Typography variant="h6">{profile.name}</Typography>
-        <Typography variant="body2" color="gray">@{profile.username}</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+          <Box>
+            <Typography variant="h6">{profile.name}</Typography>
+            <Typography variant="body2" color="gray">@{profile.username}</Typography>
+          </Box>
+
+        </Box>
+
         {profile.bio && <Typography mt={1}>{profile.bio}</Typography>}
+
         <Typography variant="body2" color="gray" display="flex" alignItems="center" mt={1}>
           <CalendarMonthIcon fontSize="small" sx={{ mr: 0.5 }} />
           Joined {new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
         </Typography>
+
         <Box mt={1}>
-          <Typography component="span" fontWeight="bold">{profile.following?.length || 0}</Typography> <Typography component="span" color='gray'>Following</Typography> &nbsp;
-          <Typography component="span" fontWeight="bold">{profile.followers?.length || 0}</Typography> <Typography component="span" color='gray'>Followers</Typography>
+          <Typography component="span" fontWeight="bold">{profile.following?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Following</Typography> &nbsp;
+          <Typography component="span" fontWeight="bold">{profile.followers?.length || 0}</Typography> <Typography component="span" fontWeight="light" color='rgba(0, 0, 0, 0.54)'>Followers</Typography>
         </Box>
       </Box>
 
-      <Tabs value={tab} onChange={(e, val) => setTab(val)} variant="fullWidth">
+      <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)} variant="fullWidth">
         <Tab label="Posts" />
         <Tab label="Replies" />
         <Tab label="Media" />
@@ -170,63 +174,78 @@ const UserProfilePage = () => {
 
       <Box>
         {tab === 0 &&
-          deduplicate(tweets.filter(tweet => !tweet.replyTo)).map((tweet, idx, arr) => (
+          deduplicate(tweets.filter(tweet => !tweet.replyTo)).map(tweet => (
             <TweetCard
               key={tweet._id}
-              ref={idx === arr.length - 1 ? lastTweetRef : null}
-              tweet={tweet}
-              userId={user}
               onLike={handleLike}
               onRetweet={handleRetweet}
+              userId={user}
+              tweet={tweet}
             />
-          ))
-        }
+          ))}
 
         {tab === 1 &&
           deduplicate(tweets.filter(tweet => tweet.replyTo)).map(tweet => (
             <TweetCard
               key={tweet._id}
-              tweet={tweet}
-              userId={user}
               onLike={handleLike}
               onRetweet={handleRetweet}
+              userId={user}
+              tweet={tweet}
             />
-          ))
-        }
+          ))}
 
         {tab === 2 &&
-          <Box sx={{ p: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 1 }}>
-            {deduplicate(tweets.filter(tweet => tweet.img && !tweet.isRetweet)).map(tweet => (
-              <Box key={tweet._id} onClick={() => navigate(`/tweet/${tweet._id}`)} sx={{
-                width: '100%',
-                aspectRatio: '1 / 1',
-                cursor: 'pointer',
-                overflow: 'hidden',
-                borderRadius: 2,
-              }}>
-                <Box component="img" src={tweet.img} alt="Tweet media" sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                }} />
-              </Box>
-            ))}
+          <Box sx={{ p: 1 }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                gap: 1,
+              }}
+            >
+              {deduplicate(tweets.filter(tweet => tweet.img && !tweet.isRetweet)).map(tweet => (
+                <Box
+                  key={tweet._id}
+                  onClick={() => navigate(`/tweet/${tweet._id}`)}
+                  sx={{
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={tweet.img}
+                    alt="Tweet media"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                </Box>
+              ))}
+            </Box>
           </Box>
         }
 
+
+
+
         {tab === 3 &&
-          deduplicate(likedTweets).map((tweet, idx, arr) => (
+          deduplicate(likedTweets).map(tweet => (
             <TweetCard
               key={tweet._id}
-              ref={idx === arr.length - 1 ? lastTweetRef : null}
-              tweet={tweet}
-              userId={user}
               onLike={handleLike}
               onRetweet={handleRetweet}
+              userId={user}
+              tweet={tweet}
             />
-          ))
-        }
+          ))}
       </Box>
     </Box>
   );
