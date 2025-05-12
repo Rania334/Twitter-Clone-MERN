@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  verificationTokenExpiry: { type: Date },
   profilePic: { type: String, default: "" }, // Profile image
   wallpaper: { type: String, default: "" },  // Background image
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

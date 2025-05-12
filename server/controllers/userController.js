@@ -118,8 +118,8 @@ const updateUser = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
-    // Upload images if any
     let profilePicUrl = "", wallpaperUrl = "";
+
     if (req.files?.profilePic) profilePicUrl = (await uploadToCloudinary(req.files.profilePic[0].buffer)).secure_url;
     if (req.files?.wallpaper) wallpaperUrl = (await uploadToCloudinary(req.files.wallpaper[0].buffer)).secure_url;
 
@@ -130,16 +130,18 @@ const registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate token
+    // Generate verification token and expiry time (24 hours)
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
 
-    // Create user with token
+    // Create user with token and expiry
     const user = new User({
       name, username, email,
       password: hashedPassword,
       profilePic: profilePicUrl,
       wallpaper: wallpaperUrl,
-      verificationToken
+      verificationToken,
+      verificationTokenExpiry,  // Store expiry field
     });
 
     await user.save();
@@ -220,8 +222,15 @@ const verifyEmail = async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "Invalid or expired token" });
 
+    // Check if the token has expired
+    if (user.verificationTokenExpiry < Date.now()) {
+      return res.status(400).json({ message: "Expired token. Please request a new verification link." });
+    }
+
+    // Mark the user as verified and remove the token
     user.isVerified = true;
     user.verificationToken = undefined;
+    user.verificationTokenExpiry = undefined; // Clear the expiration field
     await user.save();
 
     res.status(200).json({ message: "Email verified successfully!" });
@@ -231,4 +240,4 @@ const verifyEmail = async (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken,followUnfollowUser,verifyEmail };
+module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail };

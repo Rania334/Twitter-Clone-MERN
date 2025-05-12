@@ -14,7 +14,7 @@ const VerifyPopup = ({ open, email, onClose }) => {
   const handleVerify = async () => {
     try {
       setLoading(true);
-      await axios.post('/auth/verify-email', { email, token: code });
+      await axios.get(`/auth/verify-email?token=${code}`);
       alert('Email verified successfully!');
       onClose();
       navigate('/home');

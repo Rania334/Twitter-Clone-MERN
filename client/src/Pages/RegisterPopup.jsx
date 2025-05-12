@@ -13,6 +13,7 @@ import {
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from '../utils/axios';
+import VerifyPopup from './VerifyPopup'
 
 const RegisterPopup = ({ open, onClose }) => {
   const [showVerification, setShowVerification] = useState(false);
