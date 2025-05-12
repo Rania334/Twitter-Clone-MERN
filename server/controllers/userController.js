@@ -130,18 +130,16 @@ const registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification token and expiry time (24 hours)
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-    const verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
+    // Generate verification token using JWT (sign with user info and expiration time)
+    const verificationToken = jwt.sign({ username, email }, 'your-secret-key', { expiresIn: '24h' });
 
-    // Create user with token and expiry
+    // Create user with token
     const user = new User({
       name, username, email,
       password: hashedPassword,
       profilePic: profilePicUrl,
       wallpaper: wallpaperUrl,
       verificationToken,
-      verificationTokenExpiry,  // Store expiry field
     });
 
     await user.save();
@@ -218,16 +216,23 @@ const refreshToken = (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
-    
-    // Find the user based on the verification token
-    const user = await User.findOne({ verificationToken: token });
 
-    // If no user is found with this token, return an error message
-    if (!user) {
+    // Decode the token and extract user information
+    let decoded;
+    try {
+      decoded = jwt.verify(token, 'your-secret-key');
+    } catch (err) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    // Check if the token has expired
+    // Find the user by username (or userId)
+    const user = await User.findOne({ username: decoded.username });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Check if the token has expired (optional as JWT already handles expiration)
     if (user.verificationTokenExpiry < Date.now()) {
       return res.status(400).json({ message: "Expired token. Please request a new verification link." });
     }
@@ -240,7 +245,6 @@ const verifyEmail = async (req, res) => {
     // Mark the user as verified and remove the token
     user.isVerified = true;
     user.verificationToken = undefined;
-    user.verificationTokenExpiry = undefined; // Clear the expiration field
     await user.save();
 
     res.status(200).json({ message: "Email verified successfully!" });
@@ -248,7 +252,6 @@ const verifyEmail = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 
 module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail };
