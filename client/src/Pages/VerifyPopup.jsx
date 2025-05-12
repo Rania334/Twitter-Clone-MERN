@@ -17,8 +17,8 @@ const VerifyPopup = ({ open, email, onClose }) => {
     try {
       setLoading(true);
       // Send the verification code and email to the backend for validation
-      const response = await axios.post('/auth/verify-email', { code, email });
-      
+      const response = await axios.post('/auth/verify-email', { verificationKey: code, email });
+
       if (response.data.success) {
         alert('Email verified successfully!');
         onClose(); // Close the verification popup

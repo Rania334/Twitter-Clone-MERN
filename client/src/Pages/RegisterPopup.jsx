@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Box,
-  Typography,
   IconButton,
   InputLabel,
 } from '@mui/material';
@@ -18,7 +17,6 @@ import VerifyPopup from './VerifyPopup';
 const RegisterPopup = ({ open, onClose }) => {
   const [showVerification, setShowVerification] = useState(false);
   const [emailToVerify, setEmailToVerify] = useState('');
-
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 

@@ -130,29 +130,31 @@ const registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification token using JWT (sign with user info and expiration time)
-    const verificationToken = jwt.sign({ username, email }, 'your-secret-key', { expiresIn: '24h' });
+    // Generate a random 5-character verification key (e.g., "5HN85")
+    const verificationKey = crypto.randomBytes(3).toString('hex').toUpperCase(); // Generates a 6-character string
+    const verificationKeyExpiry = Date.now() + 2 * 60 * 60 * 1000; // Expiration time in 2 hours
 
-    // Create user with token
+    // Create user with key and expiration
     const user = new User({
       name, username, email,
       password: hashedPassword,
       profilePic: profilePicUrl,
       wallpaper: wallpaperUrl,
-      verificationToken,
+      verificationKey,
+      verificationKeyExpiry,
     });
 
     await user.save();
 
-    // Send verification key via email
+    // Send verification email with the key
     const emailHtml = `
       <h2>Verify your account</h2>
-      <p>Your verification key is: <strong>${verificationToken}</strong></p>
-      <p>Please enter this key in the app to verify your account.</p>
+      <p>Use the following verification key to verify your email:</p>
+      <p><strong>${verificationKey}</strong></p>
     `;
     await sendEmail(email, "Verify your Email", emailHtml);
 
-    res.status(201).json({ message: "User registered! Please verify your email using the verification key." });
+    res.status(201).json({ message: "User registered! Please verify your email." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -215,21 +217,22 @@ const refreshToken = (req, res) => {
 
 const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { verificationKey, email } = req.body; // User sends the key and email to verify
 
-    // Decode the token and extract user information
-    let decoded;
-    try {
-      decoded = jwt.verify(token, 'your-secret-key');
-    } catch (err) {
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-
-    // Find the user by username (or userId)
-    const user = await User.findOne({ username: decoded.username });
+    // Find the user by email
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: "User not found" });
+    }
+
+    // Check if the verification key matches and if it hasn't expired
+    if (user.verificationKey !== verificationKey) {
+      return res.status(400).json({ message: "Invalid verification key" });
+    }
+
+    if (Date.now() > user.verificationKeyExpiry) {
+      return res.status(400).json({ message: "Verification key expired. Please request a new one." });
     }
 
     // If the user is already verified, notify the user
@@ -237,9 +240,10 @@ const verifyEmail = async (req, res) => {
       return res.status(400).json({ message: "Your email is already verified." });
     }
 
-    // Mark the user as verified and remove the token
+    // Mark the user as verified and clear the verification key
     user.isVerified = true;
-    user.verificationToken = undefined;
+    user.verificationKey = undefined;  // Clear the verification key
+    user.verificationKeyExpiry = undefined;  // Clear the expiration time
     await user.save();
 
     res.status(200).json({ message: "Email verified successfully!" });
