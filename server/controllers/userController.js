@@ -144,20 +144,20 @@ const registerUser = async (req, res) => {
 
     await user.save();
 
-    // Send verification email
-    const verifyUrl = `https://mern-backend-o9nj.onrender.com/api/auth/verify-email?token=${verificationToken}`;
+    // Send verification key via email
     const emailHtml = `
       <h2>Verify your account</h2>
-      <p>Click the link below to verify your email:</p>
-      <a href="${verifyUrl}">Verify Email</a>
+      <p>Your verification key is: <strong>${verificationToken}</strong></p>
+      <p>Please enter this key in the app to verify your account.</p>
     `;
     await sendEmail(email, "Verify your Email", emailHtml);
 
-    res.status(201).json({ message: "User registered! Please verify your email." });
+    res.status(201).json({ message: "User registered! Please verify your email using the verification key." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -215,28 +215,36 @@ const refreshToken = (req, res) => {
 
 const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token } = req.body;
 
-    // Decode the token to get the user info
+    // Decode the token and extract user information
     let decoded;
     try {
-      decoded = jwt.verify(token, 'your-secret-key'); // Replace 'your-secret-key' with your actual key
+      decoded = jwt.verify(token, 'your-secret-key');
     } catch (err) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    // Find the user by email (or username if needed)
-    const user = await User.findOne({ email: decoded.email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    // Find the user by username (or userId)
+    const user = await User.findOne({ username: decoded.username });
 
-    // Set email as verified
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // If the user is already verified, notify the user
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Your email is already verified." });
+    }
+
+    // Mark the user as verified and remove the token
     user.isVerified = true;
+    user.verificationToken = undefined;
     await user.save();
 
-    res.status(200).json({ message: "Email verified successfully" });
+    res.status(200).json({ message: "Email verified successfully!" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

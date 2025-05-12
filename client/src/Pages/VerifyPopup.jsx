@@ -1,4 +1,3 @@
-// VerifyPopup Component
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Box } from '@mui/material';
 import axios from '../utils/axios';
@@ -10,16 +9,26 @@ const VerifyPopup = ({ open, email, onClose }) => {
   const navigate = useNavigate();
 
   const handleVerify = async () => {
+    if (!code) {
+      alert('Please enter the verification code.');
+      return;
+    }
+
     try {
       setLoading(true);
-      // Verify the code with backend
-      const response = await axios.get(`/auth/verify-email?token=${code}`);
-      alert('Email verified successfully!');
-      onClose(); // Close the popup
-      navigate('/home'); // Redirect to home page
+      // Send the verification code and email to the backend for validation
+      const response = await axios.post('/auth/verify-email', { code, email });
+      
+      if (response.data.success) {
+        alert('Email verified successfully!');
+        onClose(); // Close the verification popup
+        navigate('/home'); // Redirect to home page
+      } else {
+        alert('Verification failed. Please check the code and try again.');
+      }
     } catch (err) {
       console.error(err);
-      alert('Verification failed. Please check the code.');
+      alert('Verification failed. Please check the code and try again.');
     } finally {
       setLoading(false);
     }
@@ -35,6 +44,7 @@ const VerifyPopup = ({ open, email, onClose }) => {
             label="Verification Code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            required
           />
         </Box>
         <Box mt={2}>
