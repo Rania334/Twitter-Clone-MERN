@@ -1,26 +1,18 @@
+// RegisterPopup Component
 import React, { useState } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  Button,
-  Box,
-  Typography,
-  IconButton,
-  InputLabel,
+  Dialog, DialogTitle, DialogContent, TextField, Button, Box, IconButton
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import CloseIcon from '@mui/icons-material/Close';
 import axios from '../utils/axios';
-import VerifyPopup from './VerifyPopup'
+import CloseIcon from '@mui/icons-material/Close';
+import VerifyPopup from './VerifyPopup';
 
 const RegisterPopup = ({ open, onClose }) => {
   const [showVerification, setShowVerification] = useState(false);
   const [emailToVerify, setEmailToVerify] = useState('');
-
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
     const formData = new FormData();
@@ -33,10 +25,10 @@ const RegisterPopup = ({ open, onClose }) => {
 
     try {
       setLoading(true);
-      await axios.post('/auth/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await axios.post('/auth/register', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setEmailToVerify(data.email); // Store email
+      setEmailToVerify(data.email); // Store email for verification
       setShowVerification(true); // Show verification popup
     } catch (err) {
       console.error(err);
@@ -50,10 +42,7 @@ const RegisterPopup = ({ open, onClose }) => {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         Create your account
-        <IconButton
-          onClick={onClose}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
-        >
+        <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -89,7 +78,6 @@ const RegisterPopup = ({ open, onClose }) => {
             error={!!errors.email}
             helperText={errors.email?.message}
           />
-
           <TextField
             fullWidth
             label="Password"
@@ -108,23 +96,7 @@ const RegisterPopup = ({ open, onClose }) => {
           />
 
           <Box mt={2}>
-            <InputLabel>Profile Picture</InputLabel>
-            <input type="file" {...register('profilePic')} accept="image/*" />
-          </Box>
-
-          <Box mt={2}>
-            <InputLabel>Wallpaper (Background Image)</InputLabel>
-            <input type="file" name="wallpaper" accept="image/*" onChange={(e) => setValue('wallpaper', e.target.files)} />
-
-          </Box>
-
-          <Box mt={3}>
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={loading}
-            >
+            <Button type="submit" variant="contained" fullWidth disabled={loading}>
               {loading ? 'Registering...' : 'Register'}
             </Button>
           </Box>
@@ -133,12 +105,8 @@ const RegisterPopup = ({ open, onClose }) => {
       <VerifyPopup
         open={showVerification}
         email={emailToVerify}
-        onClose={() => {
-          setShowVerification(false);
-          onClose(); // close parent dialog if needed
-        }}
+        onClose={() => setShowVerification(false)} // Hide popup
       />
-
     </Dialog>
   );
 };

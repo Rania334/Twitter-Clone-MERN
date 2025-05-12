@@ -217,41 +217,29 @@ const verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
 
-    // Decode the token and extract user information
+    // Decode the token to get the user info
     let decoded;
     try {
-      decoded = jwt.verify(token, 'your-secret-key');
+      decoded = jwt.verify(token, 'your-secret-key'); // Replace 'your-secret-key' with your actual key
     } catch (err) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
-    // Find the user by username (or userId)
-    const user = await User.findOne({ username: decoded.username });
+    // Find the user by email (or username if needed)
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
-    // Check if the token has expired (optional as JWT already handles expiration)
-    if (user.verificationTokenExpiry < Date.now()) {
-      return res.status(400).json({ message: "Expired token. Please request a new verification link." });
-    }
-
-    // If the user is already verified, notify the user
-    if (user.isVerified) {
-      return res.status(400).json({ message: "Your email is already verified." });
-    }
-
-    // Mark the user as verified and remove the token
+    // Set email as verified
     user.isVerified = true;
-    user.verificationToken = undefined;
     await user.save();
 
-    res.status(200).json({ message: "Email verified successfully!" });
+    res.status(200).json({ message: "Email verified successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail };
