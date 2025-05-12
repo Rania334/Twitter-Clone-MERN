@@ -218,13 +218,23 @@ const refreshToken = (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
+    
+    // Find the user based on the verification token
     const user = await User.findOne({ verificationToken: token });
 
-    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+    // If no user is found with this token, return an error message
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
 
     // Check if the token has expired
     if (user.verificationTokenExpiry < Date.now()) {
       return res.status(400).json({ message: "Expired token. Please request a new verification link." });
+    }
+
+    // If the user is already verified, notify the user
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Your email is already verified." });
     }
 
     // Mark the user as verified and remove the token
@@ -238,6 +248,7 @@ const verifyEmail = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail };
