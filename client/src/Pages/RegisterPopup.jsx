@@ -20,8 +20,8 @@ const RegisterPopup = ({ open, onClose }) => {
     formData.append('username', data.username);
     formData.append('email', data.email);
     formData.append('password', data.password);
-    if (data.profilePic[0]) formData.append('profilePic', data.profilePic[0]);
-    if (data.wallpaper[0]) formData.append('wallpaper', data.wallpaper[0]);
+    // if (data.profilePic[0]) formData.append('profilePic', data.profilePic[0]);
+    // if (data.wallpaper[0]) formData.append('wallpaper', data.wallpaper[0]);
 
     try {
       setLoading(true);
