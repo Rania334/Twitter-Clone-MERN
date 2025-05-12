@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const { registerUser, loginUser, logoutUser, refreshToken } = require("../controllers/userController");
+const { registerUser, loginUser, logoutUser, refreshToken,verifyEmail } = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -16,5 +16,6 @@ router.post("/register", upload.fields([
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/refresh-token", refreshToken);
+router.get("/verify-email", verifyEmail);
 
 module.exports = router;

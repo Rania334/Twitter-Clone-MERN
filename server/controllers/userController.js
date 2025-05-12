@@ -2,6 +2,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefreshToken } = require("../utils/auth");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 const cloudinary = require("../utils/cloudinary");
 const multer = require("multer");
 
@@ -116,43 +118,46 @@ const updateUser = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
-    let profilePicUrl = "";
-    let wallpaperUrl = "";
-    console.log("Incoming request body:", req.body);
-    console.log("Incoming files:", req.files);
+    // Upload images if any
+    let profilePicUrl = "", wallpaperUrl = "";
+    if (req.files?.profilePic) profilePicUrl = (await uploadToCloudinary(req.files.profilePic[0].buffer)).secure_url;
+    if (req.files?.wallpaper) wallpaperUrl = (await uploadToCloudinary(req.files.wallpaper[0].buffer)).secure_url;
 
-    if (req.files?.profilePic) {
-      profilePicUrl = (await uploadToCloudinary(req.files.profilePic[0].buffer)).secure_url;
-    }
-
-    if (req.files?.wallpaper) {
-      const wallpaperUploadResult = await uploadToCloudinary(req.files.wallpaper[0].buffer);
-      wallpaperUrl = wallpaperUploadResult.secure_url;
-      console.log("Wallpaper uploaded to:", wallpaperUrl);
-    }
-
-
-
+    // Check existing user
     const userExists = await User.findOne({ $or: [{ email }, { username }] });
     if (userExists) return res.status(400).json({ message: "User already exists" });
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Generate token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    // Create user with token
     const user = new User({
-      name,
-      username,
-      email,
+      name, username, email,
       password: hashedPassword,
       profilePic: profilePicUrl,
       wallpaper: wallpaperUrl,
+      verificationToken
     });
 
     await user.save();
-    res.status(201).json({ message: "User registered successfully!" });
+
+    // Send verification email
+    const verifyUrl = `https://mern-backend-o9nj.onrender.com/api/auth/verify-email?token=${verificationToken}`;
+    const emailHtml = `
+      <h2>Verify your account</h2>
+      <p>Click the link below to verify your email:</p>
+      <a href="${verifyUrl}">Verify Email</a>
+    `;
+    await sendEmail(email, "Verify your Email", emailHtml);
+
+    res.status(201).json({ message: "User registered! Please verify your email." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -208,5 +213,22 @@ const refreshToken = (req, res) => {
   });
 };
 
+const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+    const user = await User.findOne({ verificationToken: token });
 
-module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken,followUnfollowUser };
+    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully!" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken,followUnfollowUser,verifyEmail };

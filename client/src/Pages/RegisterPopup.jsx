@@ -1,116 +1,161 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   TextField,
   Button,
-  Box,
-  Typography,
   IconButton,
-  InputLabel,
-} from '@mui/material';
-import { useForm } from 'react-hook-form';
-import CloseIcon from '@mui/icons-material/Close';
-import axios from '../utils/axios';
+  Box,
+  InputAdornment,
+  Typography,
+  Avatar
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import axios from "../utils/axios";
+// import { useNavigate } from "react-router-dom";
+import VerifyPopup from "./VerifyPopup"; // import the verification dialog
 
 const RegisterPopup = ({ open, onClose }) => {
-  const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, reset ,setValue} = useForm();
+  // const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    image: null
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [showVerification, setShowVerification] = useState(false);
+  const [emailToVerify, setEmailToVerify] = useState("");
 
-  const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('username', data.username);
-    formData.append('email', data.email);
-    formData.append('password', data.password);
-    if (data.profilePic[0]) formData.append('profilePic', data.profilePic[0]);
-    if (data.wallpaper[0]) formData.append('wallpaper', data.wallpaper[0]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) =>
+      data.append(key, value)
+    );
 
     try {
-      setLoading(true);
-      await axios.post('/auth/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await axios.post("/auth/register", data, {
+        headers: { "Content-Type": "multipart/form-data" }
       });
-      alert('Registration successful!');
-      reset();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert('Registration failed!');
-    } finally {
-      setLoading(false);
+      setEmailToVerify(formData.email);
+      setShowVerification(true);
+    } catch (error) {
+      alert("Registration failed");
+      console.error(error);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        Create your account
-        <IconButton
-          onClick={onClose}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-          <TextField
-            fullWidth
-            label="Name"
-            {...register('name')}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Username"
-            {...register('username')}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            {...register('email')}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            {...register('password')}
-            margin="normal"
-            required
-          />
+    <>
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle sx={{ textAlign: "center" }}>Create your account</DialogTitle>
+        <DialogContent>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box display="flex" justifyContent="center" mb={2}>
+              <label htmlFor="upload-image">
+                <input
+                  accept="image/*"
+                  id="upload-image"
+                  type="file"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+                <Avatar
+                  src={imagePreview}
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    cursor: "pointer",
+                    border: "2px solid #ccc"
+                  }}
+                />
+              </label>
+            </Box>
 
-          <Box mt={2}>
-            <InputLabel>Profile Picture</InputLabel>
-            <input type="file" {...register('profilePic')} accept="image/*" />
-          </Box>
-
-          <Box mt={2}>
-            <InputLabel>Wallpaper (Background Image)</InputLabel>
-            <input type="file" name="wallpaper" accept="image/*" onChange={(e) => setValue('wallpaper', e.target.files)}/>
-
-          </Box>
-
-          <Box mt={3}>
+            <TextField
+              margin="dense"
+              name="name"
+              label="Name"
+              fullWidth
+              value={formData.name}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              name="username"
+              label="Username"
+              fullWidth
+              value={formData.username}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              name="email"
+              label="Email"
+              fullWidth
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              name="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              fullWidth
+              value={formData.password}
+              onChange={handleChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(prev => !prev)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
             <Button
               type="submit"
-              variant="contained"
               fullWidth
-              disabled={loading}
+              variant="contained"
+              sx={{ mt: 2 }}
             >
-              {loading ? 'Registering...' : 'Register'}
+              Register
             </Button>
           </Box>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <VerifyPopup
+        open={showVerification}
+        email={emailToVerify}
+        onClose={() => {
+          setShowVerification(false);
+          onClose(); // close register dialog as well
+        }}
+      />
+    </>
   );
 };
 

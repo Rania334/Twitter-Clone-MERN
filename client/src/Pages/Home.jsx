@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  deleteTweet as deleteTweetAction ,
   fetchTweets,
   createTweet,
   likeTweet,
@@ -13,6 +14,9 @@ import TweetCard from '../Components/HomePage/TweetCard';
 import TweetSkeleton from '../Components/TweetSkeleton';
 
 const Home = () => {
+  const handleDelete = (tweetId) => {
+    dispatch(deleteTweetAction(tweetId));
+  };
   const dispatch = useDispatch();
   const observer = useRef();
 
@@ -62,6 +66,8 @@ const Home = () => {
               userId={user}
               onLike={handleLike}
               onRetweet={handleRetweet}
+              onDelete={handleDelete}
+
             />
           </div>
         ))}

@@ -54,6 +54,21 @@ export const retweetTweet = createAsyncThunk(
   }
 );
 
+export const deleteTweet = createAsyncThunk(
+  'tweets/deleteTweet',
+  async (tweetId, { rejectWithValue, getState }) => {
+    const { token } = getState().auth;
+    try {
+      await axios.delete(`/tweet/${tweetId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return tweetId;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 const tweetSlice = createSlice({
   name: 'tweets',
   initialState: {
@@ -101,6 +116,9 @@ const tweetSlice = createSlice({
           t._id === updated._id ? { ...t, retweets: updated.retweets } : t
 
         );
+      })
+      .addCase(deleteTweet.fulfilled, (state, action) => {
+        state.tweets = state.tweets.filter(tweet => tweet._id !== action.payload);
       });
   },
 });
