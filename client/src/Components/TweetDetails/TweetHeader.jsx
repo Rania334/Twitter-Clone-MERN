@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
 import { Box, Typography, Avatar, Skeleton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const TweetHeader = ({ tweet }) => {
+  const navigate = useNavigate();
+
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Box sx={{ p: 2 }}>
       <Box display="flex" alignItems="center" mb={1}>
-        <Avatar src={tweet.user.profilePic || ''} sx={{ width: 48, height: 48, mr: 2 }} />
+        <Box
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/profile/${tweet.user?.username}`);
+          }}
+          sx={{ mr: 1, cursor: 'pointer' }}
+        >
+          <Avatar src={tweet.user?.profilePic || ""} sx={{ width: 40, height: 40 }} />
+        </Box>
         <Box>
           <Typography fontWeight="bold">{tweet.user.name}</Typography>
           <Typography variant="body2" color="text.secondary">@{tweet.user.username}</Typography>

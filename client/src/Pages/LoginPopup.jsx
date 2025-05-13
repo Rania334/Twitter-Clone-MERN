@@ -240,11 +240,7 @@ const LoginPopup = ({ open, onClose }) => {
                         <RegisterPopup open={openRegister} onClose={() => setOpenRegister(false)} />
                     </Box>
                 </Box>
-                <VerifyPopup
-                    open={openVerifyPopup}
-                    email={unverifiedEmail}
-                    onClose={() => setOpenVerifyPopup(false)}
-                />
+                
             </Box>
         </Modal>
     );

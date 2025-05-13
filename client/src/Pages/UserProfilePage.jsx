@@ -19,10 +19,17 @@ const UserProfilePage = () => {
   const user = user1?._id;
 
   const decode = jwtDecode(token);
+  console.log(decode);
+  console.log(decode.id);
+
+
 
   const [tweets, setTweets] = useState([]);
   const [likedTweets, setLikedTweets] = useState([]);
   const [profile, setProfile] = useState(null);
+
+
+
   const [tab, setTab] = useState(0);
 
   const handleFollowToggle = async () => {
@@ -150,7 +157,7 @@ const UserProfilePage = () => {
               variant='contained'
               onClick={handleFollowToggle}
             >
-              {profile.followers?.includes(decode.id) ? 'Following' : 'Follow'}
+              {profile.followers?.some(follower => follower._id === decode.id) ? 'Following' : 'Follow'}
             </Button>
           )}
         </Box>

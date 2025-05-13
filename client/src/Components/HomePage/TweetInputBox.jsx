@@ -96,9 +96,7 @@ const TweetInputBox = ({ onTweet }) => {
             <IconButton size="small" sx={{ color: '#1da1f2' }}>
               <LocationIcon fontSize="small" />
             </IconButton>
-            <IconButton size="small" sx={{ color: '#1da1f2' }}>
-              <LocationOnIcon fontSize="small" />
-            </IconButton>
+            
           </Box>
 
           <Button
