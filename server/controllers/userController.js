@@ -320,7 +320,7 @@ const resendVerify = async (req, res) => {
     // Resend verification email
     sendVerificationEmail(user.email, user._id);
     return res.status(200).json({ message: "Verification email sent" });
-});
+};
 
 
 
