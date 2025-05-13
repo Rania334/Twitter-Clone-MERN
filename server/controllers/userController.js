@@ -176,12 +176,32 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
+
     if (!user) return res.status(400).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
+
+    // Check if user is verified
+    if (!user.isVerified) {
+      // Generate new key and expiry
+      const verificationKey = crypto.randomBytes(3).toString("hex").toUpperCase();
+      const verificationKeyExpiry = Date.now() + 2 * 60 * 60 * 1000;
+
+      user.verificationKey = verificationKey;
+      user.verificationKeyExpiry = verificationKeyExpiry;
+      await user.save();
+
+      const emailHtml = `
+        <h2>Verify your account</h2>
+        <p>Use this key to verify your email:</p>
+        <p><strong>${verificationKey}</strong></p>
+      `;
+      await sendEmail(user.email, "Email Verification", emailHtml);
+
+      return res.status(403).json({ message: "Email not verified", unverified: true, userId: user._id });
+    }
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
@@ -192,12 +212,12 @@ const loginUser = async (req, res) => {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
 
-    // Send both the access token and user data (including userId)
     res.json({ accessToken, user: { id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 const logoutUser = (req, res) => {
@@ -266,5 +286,43 @@ const verifyEmail = async (req, res) => {
 };
 
 
+const verifyUser = async (req, res) => {
+  const { userId, code } = req.body;
 
-module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail };
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.verificationKey !== code || Date.now() > user.verificationKeyExpiry) {
+      return res.status(400).json({ message: "Invalid or expired verification code" });
+    }
+
+    user.isVerified = true;
+    user.verificationKey = undefined;
+    user.verificationKeyExpiry = undefined;
+    await user.save();
+
+    res.json({ message: "Account verified successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+const resendVerify = async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.verified) return res.status(400).json({ message: "Email already verified" });
+
+    // Resend verification email
+    sendVerificationEmail(user.email, user._id);
+    return res.status(200).json({ message: "Verification email sent" });
+});
+
+
+
+
+module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail,verifyUser ,resendVerify};

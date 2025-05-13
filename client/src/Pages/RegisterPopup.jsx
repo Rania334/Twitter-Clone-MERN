@@ -12,6 +12,8 @@ import {
   Avatar,
   Divider,
 } from '@mui/material';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from '../utils/axios';
@@ -31,7 +33,7 @@ const RegisterPopup = ({ open, onClose }) => {
     setValue,
     trigger,
     formState: { errors },
-  } = useForm({ mode: 'onBlur' }); // Validate on field blur
+  } = useForm({ mode: 'onBlur' });
 
   const onSubmit = async (data) => {
     setServerError('');
@@ -83,20 +85,76 @@ const RegisterPopup = ({ open, onClose }) => {
         sx: {
           borderRadius: 3,
           boxShadow: 10,
-          backgroundColor: '#fefefe',
-          px: 2,
-          py: 1,
+          backgroundColor: '#fff',
+          px: 0,
+          pb: 2,
+          overflow: 'hidden'
         },
       }}
     >
-      <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem', textAlign: 'center' }}>
-        Create your account
+      {/* Wallpaper Preview Section */}
+      <Box
+        sx={{
+          width: '100%',
+          height: 180,
+          backgroundImage: `url(${wallpaperPreview || ''})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          position: 'relative',
+        }}
+      >
         <IconButton
           onClick={onClose}
-          sx={{ position: 'absolute', right: 12, top: 12, color: 'grey.600' }}
+          sx={{ position: 'absolute', right: 12, top: 12, color: 'white' }}
         >
           <CloseIcon />
         </IconButton>
+
+        {/* Wallpaper Upload Icon */}
+        <Box component="label" sx={{ position: 'absolute', bottom: 12, right: 12, zIndex: 2 }}>
+          <AddAPhotoIcon sx={{ color: 'white', bgcolor: 'rgba(0,0,0,0.5)', borderRadius: 1, p: 0.5 }} />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleWallpaperChange}
+          />
+        </Box>
+
+        {/* Profile Avatar Upload */}
+        <Box component="label" sx={{
+          width: 100,
+          height: 100,
+          position: 'absolute',
+          bottom: -50,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          cursor: 'pointer',
+          zIndex: 2
+        }}>
+          <Avatar
+            src={profilePreview || undefined}
+            sx={{
+              width: '100%',
+              height: '100%',
+              border: '3px solid white',
+              bgcolor: 'white',
+            }}
+          >
+            {!profilePreview && <AddAPhotoIcon sx={{ fontSize: 32, color: 'gray' }} />}
+          </Avatar>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleProfilePicChange}
+          />
+        </Box>
+      </Box>
+
+
+      <DialogTitle sx={{ mt: 6, textAlign: 'center', fontWeight: 700, fontSize: '1.5rem' }}>
+        Create your account
       </DialogTitle>
 
       <Divider sx={{ mb: 2 }} />
@@ -176,37 +234,7 @@ const RegisterPopup = ({ open, onClose }) => {
             onBlur={() => trigger('password')}
           />
 
-          <Box>
-            <InputLabel shrink sx={{ fontWeight: 500 }}>
-              Profile Picture
-            </InputLabel>
-            <input type="file" accept="image/*" onChange={handleProfilePicChange} />
-            {profilePreview && (
-              <Box mt={1} display="flex" justifyContent="center">
-                <Avatar src={profilePreview} sx={{ width: 64, height: 64 }} />
-              </Box>
-            )}
-          </Box>
 
-          <Box>
-            <InputLabel shrink sx={{ fontWeight: 500 }}>
-              Wallpaper (Background Image)
-            </InputLabel>
-            <input type="file" accept="image/*" onChange={handleWallpaperChange} />
-            {wallpaperPreview && (
-              <Box
-                mt={1}
-                sx={{
-                  height: 100,
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  backgroundImage: `url(${wallpaperPreview})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
-            )}
-          </Box>
 
           <Button
             type="submit"
