@@ -56,113 +56,114 @@ const RightSidebar = () => {
   const [liveEvent] = getRandomItems(liveEvents, 1);
 
   return (
-    <Box
+   <Box
+  sx={{
+    width: { xs: '0', sm: '0', md: 250 },
+    display: { xs: 'none', sm: 'none', md: 'none', lg: 'block' },
+    px: { xs: 0, sm: 0, md: 0, lg: 4 },
+    pt: 2,
+    position: 'fixed',
+    right: 0,
+  }}
+>
+  {/* Inner container with spacing between children */}
+  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Search Bar */}
+    <Paper
       sx={{
-        width: { xs: '0', sm: '0', md: 250 },
-        display: { xs: 'none', sm: 'none' ,md:'none',lg:'block'},
-        px: { xs: 0, sm: 0, md: 0, lg: 4 },
-
-        flexDirection: 'column',
-        gap: 5,
-        pt: 2,
-        position: 'fixed',
-        right: 0,
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: '9999px',
+        backgroundColor: '#EFF3F4',
+        px: 2,
+        py: 0.5,
+        height: 40,
       }}
     >
-      {/* Search Bar */}
-      <Paper
+      <SearchIcon fontSize="small" sx={{ color: '#536471' }} />
+      <InputBase
+        placeholder="Search"
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '9999px',
-          backgroundColor: '#EFF3F4',
-          px: 2,
-          py: 0.5,
-          height: 40,
+          ml: 1,
+          fontSize: 14,
+          flex: 1,
         }}
-      >
-        <SearchIcon fontSize="small" sx={{ color: '#536471' }} />
-        <InputBase
-          placeholder="Search"
-          sx={{
-            ml: 1,
-            fontSize: 14,
-            flex: 1,
-          }}
-        />
-      </Paper>
+      />
+    </Paper>
 
-      {/* Live on X */}
-      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
-        <CardContent sx={{ py: 1.5 }}>
-          <Typography fontWeight="bold" sx={{ fontSize: '1rem', mb: 1 }}>
-            Live on X
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <LiveTvIcon fontSize="small" sx={{ color: '#F91880' }} />
-            <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {liveEvent.host} is hosting
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {liveEvent.description}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                marginLeft: 'auto',
-                fontSize: 12,
-                fontWeight: 'bold',
-                backgroundColor: '#F0F0F0',
-                px: 1,
-                borderRadius: '6px',
-                alignSelf: 'start',
-              }}
-            >
-              {liveEvent.viewers}
-            </Box>
+    {/* Live on X */}
+    <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
+      <CardContent sx={{ py: 1.5 }}>
+        <Typography fontWeight="bold" sx={{ fontSize: '1rem', mb: 1 }}>
+          Live on X
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <LiveTvIcon fontSize="small" sx={{ color: '#F91880' }} />
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {liveEvent.host} is hosting
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {liveEvent.description}
+            </Typography>
           </Box>
-        </CardContent>
-      </Card>
-
-      {/* What’s happening */}
-      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
-        <CardContent sx={{ py: 1.5 }}>
-          <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-            What’s happening
-          </Typography>
-
-          {trends.map((trend, index) => (
-            <Box key={index} sx={{ mb: 3 }}>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                {trend.category}
-              </Typography>
-              <Typography variant="body2" fontWeight={600}>
-                {trend.title}
-              </Typography>
-              {trend.posts && (
-                <Typography variant="caption" color="text.secondary">
-                  {trend.posts}
-                </Typography>
-              )}
-            </Box>
-          ))}
-
-          <Button
+          <Box
             sx={{
-              mt: 1,
-              textTransform: 'none',
-              color: '#1D9BF0',
+              marginLeft: 'auto',
+              fontSize: 12,
               fontWeight: 'bold',
-              fontSize: '0.9rem',
-              px: 0,
+              backgroundColor: '#F0F0F0',
+              px: 1,
+              borderRadius: '6px',
+              alignSelf: 'start',
             }}
           >
-            Show more
-          </Button>
-        </CardContent>
-      </Card>
-    </Box>
+            {liveEvent.viewers}
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+
+    {/* What’s happening */}
+    <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
+      <CardContent sx={{ py: 1.5 }}>
+        <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
+          What’s happening
+        </Typography>
+
+        {trends.map((trend, index) => (
+          <Box key={index} sx={{ mb: 3 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+              {trend.category}
+            </Typography>
+            <Typography variant="body2" fontWeight={600}>
+              {trend.title}
+            </Typography>
+            {trend.posts && (
+              <Typography variant="caption" color="text.secondary">
+                {trend.posts}
+              </Typography>
+            )}
+          </Box>
+        ))}
+
+        <Button
+          sx={{
+            mt: 1,
+            textTransform: 'none',
+            color: '#1D9BF0',
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            px: 0,
+          }}
+        >
+          Show more
+        </Button>
+      </CardContent>
+    </Card>
+  </Box>
+</Box>
+
   );
 };
 
