@@ -76,7 +76,9 @@ const LoginPopup = ({ open, onClose }) => {
             onClose();
         } catch (err) {
             const message = err.response?.data?.message;
-            if (message === 'Please verify your email before logging in.') {
+            console.log(err);
+            console.log(message);
+            if (message === 'Email not verified') {
                 setUnverifiedEmail(email);
                 setError(message);
             } else {
@@ -87,7 +89,7 @@ const LoginPopup = ({ open, onClose }) => {
 
     const handleResendVerification = async () => {
         try {
-            await axios.post('/auth/resend-verification', { email: unverifiedEmail });
+            await axios.post('/auth/resend-verify', { email: unverifiedEmail });
             setInfoMessage('Verification email has been sent. Please check your inbox.');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to resend verification email.');
@@ -125,6 +127,7 @@ const LoginPopup = ({ open, onClose }) => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 margin="normal"
+                                autoComplete="email"
                             />
                             <TextField
                                 fullWidth
@@ -133,6 +136,7 @@ const LoginPopup = ({ open, onClose }) => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 margin="normal"
+                                autoComplete="current-password"
                             />
                             <Button
                                 type="submit"

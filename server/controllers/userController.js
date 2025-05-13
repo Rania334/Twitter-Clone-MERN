@@ -311,18 +311,23 @@ const verifyUser = async (req, res) => {
 
 
 const resendVerify = async (req, res) => {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
+  const { email } = req.body;
+  const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.verified) return res.status(400).json({ message: "Email already verified" });
+  if (!user) return res.status(404).json({ message: "User not found" });
+  if (user.verified) return res.status(400).json({ message: "Email already verified" });
 
-    // Resend verification email
-    sendVerificationEmail(user.email, user._id);
-    return res.status(200).json({ message: "Verification email sent" });
+  // Resend verification email
+  const emailHtml = `
+  <h2>Verify your account</h2>
+  <p>Use this key to verify your email:</p>
+  <p><strong>${user.verificationKey}</strong></p>
+`;
+  await sendEmail(user.email, "Verify your Email", emailHtml);
+  return res.status(200).json({ message: "Verification email sent" });
 };
 
 
 
 
-module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail,verifyUser ,resendVerify};
+module.exports = { registerUser, loginUser, updateUser, getUserByUsername, logoutUser, refreshToken, followUnfollowUser, verifyEmail, verifyUser, resendVerify };
