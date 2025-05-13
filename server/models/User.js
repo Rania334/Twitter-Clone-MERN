@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
   verificationKeyExpiry: { type: Number },  // Store the expiration time as a timestamp
   profilePic: { type: String, default: "" }, // Profile image
   wallpaper: { type: String, default: "" },  // Background image
+  bio: { type: String, default: "" },  
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 }, { timestamps: true });

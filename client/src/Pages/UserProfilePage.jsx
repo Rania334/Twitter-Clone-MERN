@@ -30,7 +30,7 @@ const UserProfilePage = () => {
       await axios.put(`/user/follow/${profile._id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-  
+
       // Refetch full profile data after follow/unfollow
       const userRes = await axios.get(`/user/getUser/${username}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -40,7 +40,7 @@ const UserProfilePage = () => {
       console.error('Error following/unfollowing:', err);
     }
   };
-  
+
 
   const handleLike = async (tweetId) => {
     try {
@@ -136,9 +136,14 @@ const UserProfilePage = () => {
             }}
           />
           {decode.username === profile.username ? (
-            <Button variant="contained" sx={{ bgcolor: 'black', borderRadius: 6 }}>
+            <Button
+              variant="contained"
+              sx={{ bgcolor: 'black', borderRadius: 6 }}
+              onClick={() => navigate('/edit-profile')}
+            >
               Edit Profile
             </Button>
+
           ) : (
             <Button
               sx={{ bgcolor: 'black', borderRadius: 6 }}

@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, TextField, Button, Box } from '@mui/material';
-import axios from '../utils/axios';
+import {
+  Dialog,
+  DialogContent,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Link,
+  CircularProgress
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from '../utils/axios';
 
 const VerifyPopup = ({ open, email, onClose }) => {
   const [code, setCode] = useState('');
@@ -9,24 +18,22 @@ const VerifyPopup = ({ open, email, onClose }) => {
   const navigate = useNavigate();
 
   const handleVerify = async () => {
-    if (!code) {
+    if (!code.trim()) {
       alert('Please enter the verification code.');
       return;
     }
 
     try {
       setLoading(true);
-      // Send the verification code and email to the backend for validation
-      const response = await axios.post('/auth/verify-email', { verificationKey: code, email });
-      console.log(response);
-      console.log(response.data);
-      console.log(response.data.success);
-      
+      const response = await axios.post('/auth/verify-email', {
+        verificationKey: code,
+        email,
+      });
 
       if (response.status === 200) {
         alert('Email verified successfully!');
-        onClose(); // Close the verification popup
-        navigate('/home'); // Redirect to home page
+        onClose();
+        navigate('/home');
       } else {
         alert('Verification failed. Please check the code and try again.');
       }
@@ -39,28 +46,57 @@ const VerifyPopup = ({ open, email, onClose }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Verify your Email</DialogTitle>
-      <DialogContent>
-        <Box mt={2}>
-          <TextField
-            fullWidth
-            label="Verification Code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-          />
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: '16px',
+          px: 4,
+          py: 6,
+          width: '100%',
+          maxWidth: 500,
+        },
+      }}
+    >
+      <DialogContent sx={{ textAlign: 'center' }}>
+        <Box display="flex" justifyContent="center" mb={2}>
+          <Typography fontSize={32} fontWeight="bold">X</Typography>
         </Box>
-        <Box mt={2}>
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={handleVerify}
-            disabled={loading}
-          >
-            {loading ? 'Verifying...' : 'Verify'}
-          </Button>
+
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          We sent you a code
+        </Typography>
+
+        <Typography variant="body2" color="textSecondary" mb={3}>
+          Enter it below to verify <strong>{email}</strong>.
+        </Typography>
+
+        <TextField
+          fullWidth
+          label="Verification code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          autoFocus
+        />
+
+        <Box mt={1} mb={3}>
+          <Link href="#" underline="hover" variant="body2">
+            Didn’t receive email?
+          </Link>
         </Box>
+
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={handleVerify}
+          disabled={!code.trim() || loading}
+          sx={{ height: 45 }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Next'}
+        </Button>
       </DialogContent>
     </Dialog>
   );

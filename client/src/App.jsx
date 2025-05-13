@@ -5,6 +5,7 @@ import { setToken } from './features/auth/authSlice';
 
 import Login from './Pages/Login';
 import Home from './Pages/Home';
+import EditProfilePage from './Pages/EditProfilePage';
 import UploadForm from './Pages/upload';
 import TweetDetails from './Components/TweetDetails/TweetDetails';
 import UserProfilePage from './Pages/UserProfilePage';
@@ -61,6 +62,8 @@ function App() {
                 <Route path="/upload" element={<UploadForm />} />
                 <Route path="/tweet/:id" element={<TweetDetails />} />
                 <Route path="/profile/:username" element={<UserProfilePage />} />
+                <Route path="/edit-profile" element={<EditProfilePage />} />
+
                 </Routes>
             </Box>
             <RightSidebar />
