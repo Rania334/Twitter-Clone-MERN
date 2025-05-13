@@ -4,7 +4,20 @@ const { updateUser,getUserByUsername,followUnfollowUser } = require("../controll
 
 const router = express.Router();
 
-router.put("/update", authenticateToken,updateUser);
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.put(
+  "/update",
+  authenticateToken,
+  upload.fields([
+    { name: "profilePic", maxCount: 1 },
+    { name: "wallpaper", maxCount: 1 }
+  ]),
+  updateUser
+);
+
 router.get("/getUser/:username", authenticateToken,getUserByUsername);
 
 router.get("/profile", authenticateToken, (req, res) => {
