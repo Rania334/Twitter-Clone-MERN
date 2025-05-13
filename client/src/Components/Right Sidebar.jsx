@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   InputBase,
-  Divider,
   Paper,
   Button,
 } from '@mui/material';
@@ -59,12 +58,13 @@ const RightSidebar = () => {
   return (
     <Box
       sx={{
-        width: 350,
-        paddingTop: 2,
-        px: 2,
-        display: 'flex',
+        width: { xs: '0', sm: '0', md: 250 },
+        display: { xs: 'none', sm: 'none' ,md:'none',lg:'block'},
+        px: { xs: 0, sm: 0, md: 0, lg: 4 },
+
         flexDirection: 'column',
-        gap: 2,
+        gap: 5,
+        pt: 2,
         position: 'fixed',
         right: 0,
       }}
@@ -93,7 +93,7 @@ const RightSidebar = () => {
       </Paper>
 
       {/* Live on X */}
-      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff',border:'.5px solid rgba(0, 0, 0, 0.08)' }}>
+      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
         <CardContent sx={{ py: 1.5 }}>
           <Typography fontWeight="bold" sx={{ fontSize: '1rem', mb: 1 }}>
             Live on X
@@ -126,7 +126,7 @@ const RightSidebar = () => {
       </Card>
 
       {/* What’s happening */}
-      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff' ,borderColor:'rgba(0, 0, 0, 0.23)',border:'.5px solid rgba(0, 0, 0, 0.08)'}}>
+      <Card elevation={0} sx={{ borderRadius: 4, backgroundColor: '#ffffff', border: '.5px solid rgba(0, 0, 0, 0.08)' }}>
         <CardContent sx={{ py: 1.5 }}>
           <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
             What’s happening
@@ -134,11 +134,7 @@ const RightSidebar = () => {
 
           {trends.map((trend, index) => (
             <Box key={index} sx={{ mb: 3 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'block' }}
-              >
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                 {trend.category}
               </Typography>
               <Typography variant="body2" fontWeight={600}>
