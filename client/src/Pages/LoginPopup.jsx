@@ -18,6 +18,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import XIcon from '@mui/icons-material/X';
 import RegisterPopup from './RegisterPopup';
 import { jwtDecode } from 'jwt-decode';
+import VerifyPopup from './VerifyPopup';
 
 const style = {
     position: 'absolute',
@@ -44,12 +45,15 @@ const styleBtn = {
 };
 
 const LoginPopup = ({ open, onClose }) => {
+    
+    const [openVerifyPopup, setOpenVerifyPopup] = useState(false);
     const [openRegister, setOpenRegister] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [unverifiedEmail, setUnverifiedEmail] = useState('');
     const [infoMessage, setInfoMessage] = useState('');
+    const [verifyKey, setVerifyKey] = useState('');  // State to hold the verification key
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -59,6 +63,8 @@ const LoginPopup = ({ open, onClose }) => {
         setError('');
         setInfoMessage('');
         setUnverifiedEmail('');
+        setUnverifiedEmail(email); // Set the email
+        setOpenVerifyPopup(true); // Open the VerifyPopup after email set
 
         try {
             const res = await axios.post(
@@ -76,8 +82,6 @@ const LoginPopup = ({ open, onClose }) => {
             onClose();
         } catch (err) {
             const message = err.response?.data?.message;
-            console.log(err);
-            console.log(message);
             if (message === 'Email not verified') {
                 setUnverifiedEmail(email);
                 setError(message);
@@ -93,6 +97,19 @@ const LoginPopup = ({ open, onClose }) => {
             setInfoMessage('Verification email has been sent. Please check your inbox.');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to resend verification email.');
+        }
+    };
+
+    const handleVerifyCode = async () => {
+        try {
+            // Logic to verify the code
+            await axios.post('/auth/verify-email', { email: unverifiedEmail,verificationKey: verifyKey });
+
+            // Handle success after verification (e.g., allow login)
+            setOpenVerifyPopup(false);
+            setInfoMessage('Email verified successfully!');
+        } catch (err) {
+            setError('Failed to verify email. Please try again.');
         }
     };
 
@@ -174,6 +191,31 @@ const LoginPopup = ({ open, onClose }) => {
                             </Button>
                         )}
 
+                        {infoMessage && (
+                            <>
+                                <TextField
+                                    fullWidth
+                                    label="Enter verification key"
+                                    value={verifyKey}
+                                    onChange={(e) => setVerifyKey(e.target.value)}
+                                    margin="normal"
+                                />
+                                <Button
+                                    fullWidth
+                                    onClick={handleVerifyCode}
+                                    sx={{
+                                        backgroundColor: 'black',
+                                        color: 'white',
+                                        textTransform: 'none',
+                                        mt: 1,
+                                        borderRadius: 20,
+                                    }}
+                                >
+                                    Verify
+                                </Button>
+                            </>
+                        )}
+
                         <Button
                             fullWidth
                             sx={{
@@ -198,6 +240,11 @@ const LoginPopup = ({ open, onClose }) => {
                         <RegisterPopup open={openRegister} onClose={() => setOpenRegister(false)} />
                     </Box>
                 </Box>
+                <VerifyPopup
+                    open={openVerifyPopup}
+                    email={unverifiedEmail}
+                    onClose={() => setOpenVerifyPopup(false)}
+                />
             </Box>
         </Modal>
     );

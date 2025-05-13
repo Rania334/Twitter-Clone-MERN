@@ -10,8 +10,12 @@ import {
   LocationOn as LocationOnIcon
 } from '@mui/icons-material';
 import EmojiPicker from 'emoji-picker-react';
+import { useSelector } from 'react-redux';
+
 
 const TweetInputBox = ({ onTweet }) => {
+  const user = useSelector((state) => state.auth.user);
+
   const [newContent, setNewContent] = useState('');
   const [newImage, setNewImage] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -36,7 +40,7 @@ const TweetInputBox = ({ onTweet }) => {
       borderBottom: '1px solid #e6ecf0',
       bgcolor: 'white',
     }}>
-      <Avatar src="" sx={{ width: 48, height: 48, mr: 2 }} />
+      <Avatar src={user?.profilePic || ''} sx={{ width: 48, height: 48, mr: 2 }} />
       <Box sx={{ flexGrow: 1 }}>
         <InputBase
           placeholder="What’s happening?"

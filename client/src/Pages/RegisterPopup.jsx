@@ -88,7 +88,7 @@ const RegisterPopup = ({ open, onClose }) => {
           backgroundColor: '#fff',
           px: 0,
           pb: 2,
-          overflow: 'hidden'
+          overflow: 'hidden',
         },
       }}
     >
@@ -96,7 +96,7 @@ const RegisterPopup = ({ open, onClose }) => {
       <Box
         sx={{
           width: '100%',
-          height: 180,
+          height: 100,
           backgroundImage: `url(${wallpaperPreview || ''})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -153,13 +153,13 @@ const RegisterPopup = ({ open, onClose }) => {
       </Box>
 
 
-      <DialogTitle sx={{ mt: 6, textAlign: 'center', fontWeight: 700, fontSize: '1.5rem' }}>
+      <DialogTitle sx={{ mt: 4, textAlign: 'center', fontWeight: 700, fontSize: '1.5rem' }}>
         Create your account
       </DialogTitle>
 
       <Divider sx={{ mb: 2 }} />
 
-      <DialogContent>
+      <DialogContent sx={{px:10}}>
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}

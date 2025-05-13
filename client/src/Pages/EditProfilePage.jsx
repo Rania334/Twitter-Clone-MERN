@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Box, TextField, Button, Avatar, Typography
+    Box, TextField, Button, Avatar, Typography, Divider, IconButton, Stack
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import axios from '../utils/axios';
 import { useNavigate } from 'react-router-dom';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CloseIcon from '@mui/icons-material/Close';
 
 const EditProfilePage = () => {
     const { token, user } = useSelector(state => state.auth);
@@ -16,6 +18,9 @@ const EditProfilePage = () => {
         profilePic: '',
         wallpaper: '',
     });
+
+    const [previewProfilePic, setPreviewProfilePic] = useState('');
+    const [previewWallpaper, setPreviewWallpaper] = useState('');
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -42,6 +47,20 @@ const EditProfilePage = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFileChange = (e, type) => {
+        const file = e.target.files[0];
+        const newFormData = { ...formData, [`${type}File`]: file };
+        setFormData(newFormData);
+
+        // Set preview images
+        if (type === 'profilePic' && file) {
+            setPreviewProfilePic(URL.createObjectURL(file));
+        }
+        if (type === 'wallpaper' && file) {
+            setPreviewWallpaper(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -66,11 +85,60 @@ const EditProfilePage = () => {
         }
     };
 
-
     return (
         <Box sx={{ maxWidth: 500, mx: 'auto', mt: 5 }}>
-            <Typography variant="h5" mb={2}>Edit Profile</Typography>
+            {/* Wallpaper Preview Section */}
+            <Box
+                sx={{
+                    width: '100%',
+                    height: 200,
+                    backgroundImage: `url(${previewWallpaper || formData.wallpaper})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    position: 'relative',
+                }}
+            >
+                <IconButton
+                    onClick={() => navigate(`/profile/${user.username}`)}
+                    sx={{ position: 'absolute', right: 12, top: 12, color: 'white' }}
+                >
+                    <CloseIcon />
+                </IconButton>
+
+                {/* Wallpaper Upload Icon */}
+                <Box component="label" sx={{ position: 'absolute', bottom: 12, right: 12, zIndex: 2 }}>
+                    <PhotoCameraIcon sx={{ color: 'white', bgcolor: 'rgba(0,0,0,0.5)', borderRadius: 1, p: 0.5 }} />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) => handleFileChange(e, 'wallpaper')}
+                    />
+                </Box>
+            </Box>
+
+            {/* Profile Picture Upload Section */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: -6 }}>
+                <label htmlFor="profilePic-input">
+                    <Avatar
+                        sx={{ width: 120, height: 120, border: '3px solid white' }}
+                        src={previewProfilePic || formData.profilePic}
+                    >
+                        {!previewProfilePic && <PhotoCameraIcon sx={{ fontSize: 32, color: 'gray' }} />}
+                    </Avatar>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        id="profilePic-input"
+                        onChange={(e) => handleFileChange(e, 'profilePic')}
+                    />
+                </label>
+            </Box>
+
+            {/* Profile Edit Form */}
             <form onSubmit={handleSubmit}>
+                <Typography variant="h5" mb={2} textAlign="center">Edit Profile</Typography>
                 <TextField
                     fullWidth margin="normal"
                     label="Name" name="name"
@@ -82,23 +150,8 @@ const EditProfilePage = () => {
                     label="Bio" name="bio"
                     value={formData.bio} onChange={handleChange}
                 />
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setFormData(prev => ({ ...prev, profilePicFile: e.target.files[0] }))}
-                    style={{ marginTop: '16px' }}
-                />
-                <Typography variant="caption">Profile Picture</Typography>
 
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setFormData(prev => ({ ...prev, wallpaperFile: e.target.files[0] }))}
-                    style={{ marginTop: '16px' }}
-                />
-                <Typography variant="caption">Wallpaper</Typography>
-
-                <Button variant="contained" type="submit" sx={{ mt: 2 }}>
+                <Button variant="contained" type="submit" sx={{ mt: 2, width: '100%' }}>
                     Save Changes
                 </Button>
             </form>
