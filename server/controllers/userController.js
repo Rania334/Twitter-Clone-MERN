@@ -82,10 +82,12 @@ const updateUser = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    const { name, username, email, password } = req.body;
+    const { name, username, email, password, bio } = req.body;
     let updatedData = {};
 
     if (name) updatedData.name = name;
+    if (bio) updatedData.bio = bio;
+
     if (username) {
       const existingUser = await User.findOne({ username });
       if (existingUser && existingUser._id.toString() !== req.user.id) {
@@ -106,6 +108,16 @@ const updateUser = async (req, res) => {
       updatedData.password = await bcrypt.hash(password, 10);
     }
 
+    if (req.files?.profilePic) {
+      const profilePicResult = await uploadToCloudinary(req.files.profilePic[0].buffer);
+      updatedData.profilePic = profilePicResult.secure_url;
+    }
+
+    if (req.files?.wallpaper) {
+      const wallpaperResult = await uploadToCloudinary(req.files.wallpaper[0].buffer);
+      updatedData.wallpaper = wallpaperResult.secure_url;
+    }
+
     const user = await User.findByIdAndUpdate(req.user.id, updatedData, { new: true }).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -115,6 +127,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 const registerUser = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
