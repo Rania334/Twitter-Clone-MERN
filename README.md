@@ -49,6 +49,19 @@ The authentication system is based on **access and refresh tokens**:
 
 This setup mimics real-world practices used by platforms like Twitter to manage secure and scalable authentication.
 
+## Screenshots
+
+### Login Page
+![Screenshot (2492)](https://github.com/user-attachments/assets/c9453fa6-f609-46ee-bf88-429bd290863f)
+![Screenshot (2491)](https://github.com/user-attachments/assets/836f61d8-4ef5-47fa-9df2-ca6e059c23a9)
+
+
+### Home Feed
+![Screenshot (2493)](https://github.com/user-attachments/assets/13d82b30-b1d2-4059-b0ec-0168d1ad7c41)
+
+### Profile Page
+![Screenshot (2495)](https://github.com/user-attachments/assets/c15061b1-5dbe-4978-976c-e9962dff6371)
+
 
 ## Installation
 
