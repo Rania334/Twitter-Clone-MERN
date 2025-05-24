@@ -5,13 +5,16 @@ A full-featured Twitter clone that allows users to post tweets, comment, reply, 
 ## Features
 
 - User authentication (sign up, login, logout)
-- Secure authentication using access tokens and refresh tokens (JWT-based)
+- Secure access and refresh token flow (JWT-based)
 - Post, edit, and delete tweets
 - Comment and reply on tweets
 - Like tweets
-- View user profiles with tweet history
-- Responsive and mobile-friendly design
-- RESTful API integration between frontend and backend
+- Follow and unfollow users
+- User profiles with tweet history and social connections
+- Upload profile pictures using Cloudinary
+- Responsive design for mobile and desktop
+- RESTful API between frontend and backend
+- Deployed backend on Render
 
 ## Tech Stack
 
