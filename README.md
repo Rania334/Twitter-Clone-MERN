@@ -17,6 +17,10 @@ A full-featured Twitter clone that allows users to post tweets, comment, reply, 
 - RESTful API between frontend and backend
 - Deployed backend on Render
 
+## Live Demo
+
+Try the app live here: [https://mern-frontend-ebvk.onrender.com/](https://mern-frontend-ebvk.onrender.com/)
+
 ## Tech Stack
 
 **Frontend:**
