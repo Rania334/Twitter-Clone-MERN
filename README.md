@@ -5,6 +5,7 @@ A full-featured Twitter clone that allows users to post tweets, comment, reply, 
 ## Features
 
 - User authentication (sign up, login, logout)
+- **Email verification** on sign-up using a token-based confirmation link
 - Secure access and refresh token flow (JWT-based)
 - Post, edit, and delete tweets
 - Comment and reply on tweets
